@@ -20,6 +20,7 @@ public class Cancion extends Reproducible{
         this.artista=artista;
         this.album=album;
         this.fecha=fecha;
+        
     }
     
     @Override
