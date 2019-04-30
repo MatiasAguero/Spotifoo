@@ -13,15 +13,18 @@ import java.util.List;
  */
 public class GestorLibreria {
     
-    MotorBusqueda buscador; 
     BaseDatos bd; 
         
     public GestorLibreria(){
         this.bd = FileHandler.loadDB();
     }
     
+    public GestorLibreria(BaseDatos bd){
+        this.bd=bd;
+    }
+    
     public List<Reproducible> buscar(Filtro f){
-        //TODO....
+        return bd.getReproducible(f);
     }
     
     public void addReprod(Reproducible r){

@@ -17,10 +17,14 @@ public abstract class Reproducible implements Serializable{
         this.id = this.hashCode();
     }
     
-    public abstract List<Cancion> getCanciones(Filtro f);
-    
+    public abstract List<Reproducible> filtrarCanciones(Filtro f);
+    public abstract List<Reproducible> getCanciones();
     public int getId(){
         return this.id;
+    }
+
+    public String getNombre() {
+        return nombre;
     }
     
     public void play(){

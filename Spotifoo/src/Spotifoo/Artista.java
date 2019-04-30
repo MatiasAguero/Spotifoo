@@ -9,10 +9,10 @@ import java.util.List;
 public class Artista {
     String nombre;
     String genero;
-    List<Album> discografia;
+    List<ConjuntoCanciones> discografia;
     int añoFormacion;
     
-    public Artista(String nombre,String genero,List<Album> discografia,int añoFormacion){
+    public Artista(String nombre,String genero,List<ConjuntoCanciones> discografia,int añoFormacion){
         this.añoFormacion=añoFormacion;
         this.nombre=nombre;
         this.genero=genero;
@@ -23,7 +23,7 @@ public class Artista {
         this.añoFormacion = añoFormacion;
     }
 
-    public void setDiscografia(List<Album> discografia) {
+    public void setDiscografia(List<ConjuntoCanciones> discografia) {
         this.discografia = discografia;
     }
 
@@ -39,7 +39,7 @@ public class Artista {
         return añoFormacion;
     }
 
-    public List<Album> getDiscografia() {
+    public List<ConjuntoCanciones> getDiscografia() {
         return discografia;
     }
 

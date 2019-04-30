@@ -10,11 +10,11 @@ import java.util.List;
  */
 public class Cancion extends Reproducible{
     Artista artista;
-    Album album;
+    ConjuntoCanciones album;
     String fecha;
     String genero;
     
-    public Cancion(String nombre,Artista artista,Album album,String genero,String fecha){
+    public Cancion(String nombre,Artista artista,ConjuntoCanciones album,String genero,String fecha){
         super(nombre);
         this.genero=genero;
         this.artista=artista;
@@ -22,16 +22,31 @@ public class Cancion extends Reproducible{
         this.fecha=fecha;
         
     }
+        public Cancion(String nombre,Artista artista,String genero,String fecha){
+        super(nombre);
+        this.genero=genero;
+        this.artista=artista;
+        this.album=null;
+        this.fecha=fecha;
+        
+    }
     
     @Override
-    public List<Cancion> getCanciones(Filtro f) {
-        List<Cancion> salida = new ArrayList<>();
+    public List<Reproducible> filtrarCanciones(Filtro f) {
+        List<Reproducible> salida = new ArrayList<>();
         if (f.cumple(this))
                 salida.add(this);
         return salida;
     }
+    
+    @Override
+    public List<Reproducible> getCanciones(){
+        List<Reproducible> salida =new ArrayList<Reproducible>();
+        salida.add(this);
+        return salida;
+    }
 
-    public void setAlbum(Album album) {
+    public void setAlbum(ConjuntoCanciones album) {
         this.album = album;
     }
 
@@ -51,7 +66,7 @@ public class Cancion extends Reproducible{
         this.nombre = nombre;
     }
 
-    public Album getAlbum() {
+    public ConjuntoCanciones getAlbum() {
         return album;
     }
 

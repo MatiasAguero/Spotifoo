@@ -6,7 +6,11 @@
 package Spotifoo.DataManager;
 
 import Spotifoo.*;
+import Spotifoo.Filtro.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -74,5 +78,14 @@ public class BaseDatos {
     
     protected HashMap<String, Cuenta> getCuentas(){
         return this.cuentas;
+    }
+    
+    public List<Reproducible> getReproducible(Filtro f){
+        List<Reproducible> salida = new ArrayList<>();
+        for (Map.Entry<Integer, Reproducible> entry : libreria.entrySet()) {
+            if (f.cumple(entry.getValue()))
+                salida.add(entry.getValue());
+        }
+        return salida;
     }
 }
