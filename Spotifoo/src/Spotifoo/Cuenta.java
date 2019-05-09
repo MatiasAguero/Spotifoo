@@ -1,6 +1,7 @@
 package Spotifoo;
 
 import java.io.Serializable;
+import javax.swing.JFrame;
 
 /**
  *
@@ -37,4 +38,11 @@ public abstract class Cuenta implements Serializable, Conectable{
         //ACA PARA UN USUARIO COMUN SE DEBERIA ACTUALIZAR LA BASE DE DATOS CON
         //LOS CAMBIOS REALIZADOS A LAS LISTAS DE REPRODUCCION PERSONALES
     }
+
+    public String getContraseña() {
+        return contraseña;
+    }
+    
+    public abstract JFrame getFrame();
+    
 }

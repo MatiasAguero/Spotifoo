@@ -1,10 +1,12 @@
 package Spotifoo;
 
+import Interfaz.ventanaUsuario;
 import Spotifoo.DataManager.FileHandler;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.swing.JFrame;
 
 /**
  *
@@ -46,5 +48,10 @@ public class Usuario extends Cuenta{
 
     public void descargarRepr(Reproducible r){
         //TODO....
+    }
+
+    @Override
+    public JFrame getFrame() {
+        return new ventanaUsuario();
     }
 }

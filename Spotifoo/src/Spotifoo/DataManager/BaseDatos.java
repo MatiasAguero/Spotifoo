@@ -43,6 +43,12 @@ public class BaseDatos {
         else
             return false;
     }
+    
+    public Cuenta getCuenta(String userName, String contraseña){
+        if (connect(userName,contraseña))
+            return cuentas.get(userName);
+        return null;
+    }
 
     public void guardarDatos(){
         FileHandler.saveDB(this);

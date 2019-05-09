@@ -1,6 +1,7 @@
 
 package Spotifoo;
 
+import Interfaz.ventanaLogin;
 import Spotifoo.DataManager.BaseDatos;
 import Spotifoo.DataManager.GestorLibreria;
 import Spotifoo.Filtro.*;
@@ -25,9 +26,7 @@ public class Spotifoo {
         GestorLibreria gestor = new GestorLibreria(bd);
         List<Reproducible> resultado = gestor.buscar(filtroXNombreCancion);
         
-        for(Reproducible r : resultado){
-            System.out.println(r.getNombre());
-        }
+        new ventanaLogin(bd).setVisible(true);
         //bd.guardarDatos();
     }
     
