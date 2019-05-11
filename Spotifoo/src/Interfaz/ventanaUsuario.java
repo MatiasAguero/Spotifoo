@@ -5,9 +5,19 @@
  */
 package Interfaz;
 
+import java.awt.List;
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.GroupLayout;
+import static javax.swing.GroupLayout.Alignment.BASELINE;
+import static javax.swing.GroupLayout.Alignment.LEADING;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 
 /**
@@ -15,17 +25,66 @@ import javax.swing.WindowConstants;
  * @author nico
  */
 public class ventanaUsuario extends javax.swing.JFrame {
+    private JPanel tab;
+    private JButton boton;
     
     public ventanaUsuario() {
         initComponents();
-        setLocationRelativeTo(null);
         this.setTitle("Spotifoo");
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new BoxLayout(getContentPane(),BoxLayout.Y_AXIS));
         
-        JPanel tab = new JPanel();
+        generarLayout();
+ 
+    }
+    
+    private void generarLayout(){
+        JTextField textField = new JTextField();
+        JLabel label = new JLabel("Buscar:");;
+        JCheckBox cancionCheckBox = new JCheckBox("Cancion");
+        JCheckBox albumCheckBox = new JCheckBox("Album");
+        JCheckBox generoCheckBox = new JCheckBox("Genero");
+        JCheckBox usuarioCheckBox = new JCheckBox("Usuario");
+        JButton findButton = new JButton("Buscar");
+        List list1 = new List();
+        
+        tab = new JPanel();
+        GroupLayout layout = new GroupLayout(tab);
+        tab.setLayout(layout);
+        layout.setAutoCreateGaps(true);
+        layout.setAutoCreateContainerGaps(true);
+        
+        layout.setHorizontalGroup(layout.createSequentialGroup()
+            .addComponent(label)
+            .addGroup(layout.createParallelGroup(LEADING)
+                .addComponent(textField)
+                .addGroup(layout.createSequentialGroup()
+                    .addComponent(cancionCheckBox)
+                    .addComponent(albumCheckBox)
+                    .addComponent(generoCheckBox)
+                    .addComponent(usuarioCheckBox))
+                    .addComponent(list1))
+            .addGroup(layout.createParallelGroup(LEADING)
+                .addComponent(findButton))
+        );
+ 
+        layout.setVerticalGroup(layout.createSequentialGroup()
+            .addGroup(layout.createParallelGroup(BASELINE)
+                .addComponent(label)
+                .addComponent(textField)
+                .addComponent(findButton))
+            .addGroup(layout.createParallelGroup(LEADING)
+                .addComponent(cancionCheckBox)
+                .addComponent(albumCheckBox)
+                .addComponent(generoCheckBox)
+                .addComponent(usuarioCheckBox))
+            .addGroup(layout.createParallelGroup(LEADING)
+                .addComponent(list1))
+        );
+        
         JScrollPane scrollPanel=new JScrollPane(tab);
         tabs.addTab("Explorar", scrollPanel);
-        
         
         tab = new JPanel();
         scrollPanel=new JScrollPane(tab);
