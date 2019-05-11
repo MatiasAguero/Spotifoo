@@ -1,12 +1,13 @@
 package Spotifoo;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  *
  * @author nico
  */
-public class Artista {
+public class Artista implements Serializable{
     String nombre;
     String genero;
     List<ConjuntoCanciones> discografia;

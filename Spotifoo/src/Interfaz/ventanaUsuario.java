@@ -5,9 +5,18 @@
  */
 package Interfaz;
 
+import Spotifoo.Reproducible;
+import java.awt.GridLayout;
+import java.util.List;
 import javax.swing.BoxLayout;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
 import javax.swing.WindowConstants;
 
 /**
@@ -22,21 +31,48 @@ public class ventanaUsuario extends javax.swing.JFrame {
         this.setTitle("Spotifoo");
         getContentPane().setLayout(new BoxLayout(getContentPane(),BoxLayout.Y_AXIS));
         
-        JPanel tab = new JPanel();
+        //Genera el componente de las pestañas
+        JTabbedPane tabs = new JTabbedPane();
+        //Lo añade en primer lugar en el frame
+        this.add(tabs, 0);
+        
+        //Genera los componentes para insertar dentro de la pestaña principal
+        //El componente donde van las playlist
+        JScrollPane playlists = new JScrollPane(new JList());
+        
+        //**********************************************************
+        //************INSERTAR EXPLORADOR DE BIBLIOTECA*************
+        
+        //Crea el divisor superior con la playlist y el explorador de la biblioteca 
+        JSplitPane topSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, playlists, new JPanel());
+        
+        //Crea el divisor inferior, donde va el reproductor
+        JPanel reproductor = new JPanel();
+        
+        //Inserta en la pestaña Principal todos los componentes creados
+        JSplitPane tabPrincipal = new JSplitPane(JSplitPane.VERTICAL_SPLIT, topSplit, reproductor);
+        tabs.addTab("Explorar", tabPrincipal);
+        //tab = new JTextArea();
+
+        //JComponent panel2 = makeTextPanel("Panel #2");
+        tabs.insertTab("Mi Bilbioteca", null, new JPanel(), null, 1);
+        
+        /*JPanel tab = new JPanel();
         JScrollPane scrollPanel=new JScrollPane(tab);
         tabs.addTab("Explorar", scrollPanel);
         
         
         tab = new JPanel();
         scrollPanel=new JScrollPane(tab);
-        tabs.addTab("Tu Biblioteca", scrollPanel);
+        tabs.addTab("Tu Biblioteca", scrollPanel);*/
+        
+        
     }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        tabs = new javax.swing.JTabbedPane();
         jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -53,10 +89,6 @@ public class ventanaUsuario extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(28, 28, 28)
-                .addComponent(tabs)
-                .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
                 .addGap(359, 359, 359)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(378, Short.MAX_VALUE))
@@ -64,9 +96,7 @@ public class ventanaUsuario extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(18, 18, 18)
-                .addComponent(tabs, javax.swing.GroupLayout.PREFERRED_SIZE, 349, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(379, 379, 379)
                 .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 39, Short.MAX_VALUE)
                 .addContainerGap())
         );
@@ -117,6 +147,5 @@ public class ventanaUsuario extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
-    private javax.swing.JTabbedPane tabs;
     // End of variables declaration//GEN-END:variables
 }
