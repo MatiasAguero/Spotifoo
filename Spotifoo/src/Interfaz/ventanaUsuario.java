@@ -5,19 +5,15 @@
  */
 package Interfaz;
 
-import Spotifoo.Reproducible;
-import java.awt.GridLayout;
-import java.util.List;
+import Spotifoo.DataManager.BaseDatos;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import javax.swing.BoxLayout;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
-import javax.swing.JTextArea;
-import javax.swing.WindowConstants;
 
 /**
  *
@@ -25,6 +21,7 @@ import javax.swing.WindowConstants;
  */
 public class ventanaUsuario extends javax.swing.JFrame {
     
+    BaseDatos bd;
     public ventanaUsuario() {
         initComponents();
         setLocationRelativeTo(null);
@@ -45,18 +42,24 @@ public class ventanaUsuario extends javax.swing.JFrame {
         
         //Crea el divisor superior con la playlist y el explorador de la biblioteca 
         JSplitPane topSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, playlists, new JPanel());
-        
+        topSplit.setDividerSize(1);
+        topSplit.setEnabled(false);
         //Crea el divisor inferior, donde va el reproductor
         JPanel reproductor = new JPanel();
         
         //Inserta en la pestaña Principal todos los componentes creados
         JSplitPane tabPrincipal = new JSplitPane(JSplitPane.VERTICAL_SPLIT, topSplit, reproductor);
         tabs.addTab("Explorar", tabPrincipal);
+        
         //tab = new JTextArea();
 
         //JComponent panel2 = makeTextPanel("Panel #2");
         tabs.insertTab("Mi Bilbioteca", null, new JPanel(), null, 1);
         
+        tabPrincipal.setDividerSize(1);
+        tabPrincipal.setEnabled(false);
+        tabPrincipal.setResizeWeight(0.9);
+                
         /*JPanel tab = new JPanel();
         JScrollPane scrollPanel=new JScrollPane(tab);
         tabs.addTab("Explorar", scrollPanel);
@@ -65,8 +68,15 @@ public class ventanaUsuario extends javax.swing.JFrame {
         tab = new JPanel();
         scrollPanel=new JScrollPane(tab);
         tabs.addTab("Tu Biblioteca", scrollPanel);*/
-        
-        
+        addWindowListener(new WindowAdapter() {
+
+            @Override
+            public void windowClosing(WindowEvent e) {
+                bd = BaseDatos.getBaseDatos();
+                bd.guardarDatos();
+                System.exit(0);
+            }
+        });
     }
 
     @SuppressWarnings("unchecked")
@@ -74,8 +84,6 @@ public class ventanaUsuario extends javax.swing.JFrame {
     private void initComponents() {
 
         jButton1 = new javax.swing.JButton();
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jButton1.setText("Salir");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
