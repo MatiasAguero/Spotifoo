@@ -26,8 +26,7 @@ public class Spotifoo {
         GestorLibreria gestor = new GestorLibreria(bd);
         List<Reproducible> resultado = gestor.buscar(filtroXNombreCancion);
 
-        new ventanaLogin(bd).setVisible(true);
-        bd.guardarDatos();
+        new ventanaLogin().setVisible(true);
     }
     
 }

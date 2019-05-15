@@ -20,16 +20,29 @@ public class BaseDatos {
     
     HashMap<String, Cuenta> cuentas;
     HashMap<Integer, Reproducible> libreria;
-
-    public BaseDatos() {
+    private static BaseDatos instanciaBd;
+    
+    private BaseDatos() {
         this.cuentas = new HashMap();
         this.libreria = new HashMap();
     }
 
-    public BaseDatos(HashMap<String, Cuenta> users, HashMap<Integer, Reproducible> libreria) {
-        this.cuentas = users;
+    public static BaseDatos getBaseDatos(){
+        if (instanciaBd == null){
+            instanciaBd = new BaseDatos();
+            return instanciaBd;
+        }
+        return instanciaBd;
+    }
+
+    public void setCuentas(HashMap<String, Cuenta> cuentas) {
+        this.cuentas = cuentas;
+    }
+
+    public void setLibreria(HashMap<Integer, Reproducible> libreria) {
         this.libreria = libreria;
     }
+    
     
     //Realiza la accion de login, comprueba que el usuario exista y que las contraseñas sean las mismas
     public boolean connect(String userName, String contraseña){

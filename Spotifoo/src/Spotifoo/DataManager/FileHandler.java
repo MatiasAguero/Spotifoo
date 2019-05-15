@@ -135,11 +135,13 @@ public class FileHandler {
                 ois.close();
 
                 //Genera la base de datos
-                BaseDatos bd = new BaseDatos(u, r);
+                BaseDatos bd = BaseDatos.getBaseDatos();
+                bd.setCuentas(u);
+                bd.setLibreria(r);
                 return bd;
             }
             else
-                return new BaseDatos();
+                return BaseDatos.getBaseDatos();
             
         } catch (ClassNotFoundException | FileNotFoundException ex) {
                 Logger.getLogger(FileHandler.class.getName()).log(Level.SEVERE, null, ex);

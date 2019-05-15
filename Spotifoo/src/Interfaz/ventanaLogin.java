@@ -7,6 +7,9 @@ package Interfaz;
 
 import Spotifoo.Cuenta;
 import Spotifoo.DataManager.BaseDatos;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -14,17 +17,25 @@ import javax.swing.JOptionPane;
  *
  * @author nico
  */
-public class ventanaLogin extends javax.swing.JFrame {
+public class ventanaLogin extends javax.swing.JFrame{
 
     BaseDatos bd;
-    public ventanaLogin(BaseDatos bd) {
+    public ventanaLogin() {
         initComponents();
         this.setTitle("Spotifoo");
         setLocationRelativeTo(null);
-        this.bd = bd;
-    }
+        this.bd = BaseDatos.getBaseDatos();
+        this.setVisible(true);
+        addWindowListener(new WindowAdapter() {
 
-    @SuppressWarnings("unchecked")
+            @Override
+            public void windowClosing(WindowEvent e) {
+                bd = BaseDatos.getBaseDatos();
+                bd.guardarDatos();
+                System.exit(0);
+            }
+        });
+    }
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -110,7 +121,7 @@ public class ventanaLogin extends javax.swing.JFrame {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
         setVisible(false);
-        new VentanaCreacionCuenta(bd).setVisible(true);
+        new VentanaCreacionCuenta().setVisible(true);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -137,4 +148,5 @@ public class ventanaLogin extends javax.swing.JFrame {
     private javax.swing.JPasswordField jPasswordField1;
     private javax.swing.JTextField jTextField2;
     // End of variables declaration//GEN-END:variables
+
 }

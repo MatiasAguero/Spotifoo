@@ -19,11 +19,11 @@ public class VentanaCreacionCuenta extends javax.swing.JFrame {
      * Creates new form VentanaCreacionCuenta
      */
     BaseDatos bd;
-    public VentanaCreacionCuenta(BaseDatos bd) {
+    public VentanaCreacionCuenta() {
         initComponents();
         this.setTitle("Spotifoo");
         setLocationRelativeTo(null);
-        this.bd = bd;
+        this.bd = BaseDatos.getBaseDatos();
     }
 
     /**
@@ -133,7 +133,7 @@ public class VentanaCreacionCuenta extends javax.swing.JFrame {
             setVisible(false);
             Usuario c = new Usuario(usuario.getText(),pass.getText());
             bd.addCuenta(c);
-            new ventanaLogin(bd).setVisible(true);
+            new ventanaLogin().setVisible(true);
         }else{
             JOptionPane.showMessageDialog(null,"Las constraseñas no coinciden.");
         }
