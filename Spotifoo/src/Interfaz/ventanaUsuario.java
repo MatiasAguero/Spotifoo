@@ -7,6 +7,9 @@ package Interfaz;
 
 import java.awt.List;
 import javax.swing.BorderFactory;
+import Spotifoo.DataManager.BaseDatos;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import javax.swing.BoxLayout;
 import javax.swing.GroupLayout;
 import static javax.swing.GroupLayout.Alignment.BASELINE;
@@ -14,11 +17,13 @@ import static javax.swing.GroupLayout.Alignment.LEADING;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
+import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
 
 /**
  *
@@ -27,7 +32,9 @@ import javax.swing.WindowConstants;
 public class ventanaUsuario extends javax.swing.JFrame {
     private JPanel tab;
     private JButton boton;
+    JPanel buscador;
     
+    BaseDatos bd;
     public ventanaUsuario() {
         initComponents();
         this.setTitle("Spotifoo");
@@ -40,6 +47,52 @@ public class ventanaUsuario extends javax.swing.JFrame {
     }
     
     private void generarLayout(){
+        //Genera el componente de las pestañas
+        JTabbedPane tabs = new JTabbedPane();
+        //Lo añade en primer lugar en el frame
+        this.add(tabs, 0);
+        
+        //Genera los componentes para insertar dentro de la pestaña principal
+        //El componente donde van las playlist
+        JScrollPane playlists = new JScrollPane(new JList());
+        
+        //**********************************************************
+        //************INSERTAR EXPLORADOR DE BIBLIOTECA*************
+        
+        //Crea el divisor superior con la playlist y el explorador de la biblioteca 
+        buscador = new JPanel();
+        generarLayoutBuscador();
+        JSplitPane topSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, playlists, buscador);
+        topSplit.setDividerSize(1);
+        topSplit.setEnabled(false);
+        //Crea el divisor inferior, donde va el reproductor
+        JPanel reproductor = new JPanel();
+        
+        //Inserta en la pestaña Principal todos los componentes creados
+        JSplitPane tabPrincipal = new JSplitPane(JSplitPane.VERTICAL_SPLIT, topSplit, reproductor);
+        tabs.addTab("Explorar", tabPrincipal);
+        
+        //tab = new JTextArea();
+
+        //JComponent panel2 = makeTextPanel("Panel #2");
+        tabs.insertTab("Mi Bilbioteca", null, new JPanel(), null, 1);
+        
+        tabPrincipal.setDividerSize(1);
+        tabPrincipal.setEnabled(false);
+        tabPrincipal.setResizeWeight(0.9);
+                
+        addWindowListener(new WindowAdapter() {
+
+            @Override
+            public void windowClosing(WindowEvent e) {
+                bd = BaseDatos.getBaseDatos();
+                bd.guardarDatos();
+                System.exit(0);
+            }
+        });
+    }
+    
+    private void generarLayoutBuscador(){
         JTextField textField = new JTextField();
         JLabel label = new JLabel("Buscar:");;
         JCheckBox cancionCheckBox = new JCheckBox("Cancion");
@@ -49,9 +102,8 @@ public class ventanaUsuario extends javax.swing.JFrame {
         JButton findButton = new JButton("Buscar");
         List list1 = new List();
         
-        tab = new JPanel();
-        GroupLayout layout = new GroupLayout(tab);
-        tab.setLayout(layout);
+        GroupLayout layout = new GroupLayout(buscador);
+        buscador.setLayout(layout);
         layout.setAutoCreateGaps(true);
         layout.setAutoCreateContainerGaps(true);
         
@@ -82,23 +134,13 @@ public class ventanaUsuario extends javax.swing.JFrame {
             .addGroup(layout.createParallelGroup(LEADING)
                 .addComponent(list1))
         );
-        
-        JScrollPane scrollPanel=new JScrollPane(tab);
-        tabs.addTab("Explorar", scrollPanel);
-        
-        tab = new JPanel();
-        scrollPanel=new JScrollPane(tab);
-        tabs.addTab("Tu Biblioteca", scrollPanel);
     }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        tabs = new javax.swing.JTabbedPane();
         jButton1 = new javax.swing.JButton();
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jButton1.setText("Salir");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -112,10 +154,6 @@ public class ventanaUsuario extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(28, 28, 28)
-                .addComponent(tabs)
-                .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
                 .addGap(359, 359, 359)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(378, Short.MAX_VALUE))
@@ -123,9 +161,7 @@ public class ventanaUsuario extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(18, 18, 18)
-                .addComponent(tabs, javax.swing.GroupLayout.PREFERRED_SIZE, 349, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(379, 379, 379)
                 .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 39, Short.MAX_VALUE)
                 .addContainerGap())
         );
@@ -176,6 +212,5 @@ public class ventanaUsuario extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
-    private javax.swing.JTabbedPane tabs;
     // End of variables declaration//GEN-END:variables
 }

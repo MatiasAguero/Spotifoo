@@ -6,6 +6,7 @@ package Spotifoo.DataManager;
  */
 import Spotifoo.Cuenta;
 import Spotifoo.Reproducible;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -115,24 +116,32 @@ public class FileHandler {
         FileInputStream fis;
         HashMap<Integer, Reproducible> r;
         HashMap<String, Cuenta> u;
+        File fLib = new File(PATH_APP_BD_LIB); 
+        File fUsr = new File(PATH_APP_BD_USERS);
 
         try {
             
-            //Carga el archivo de la libreria
-            fis = new FileInputStream(PATH_APP_BD_LIB);
-            ois = new ObjectInputStream(fis);
-            r = (HashMap<Integer, Reproducible>) ois.readObject();     
-            ois.close();
-            
-            //Carga el archivo de los usuarios
-            fis = new FileInputStream(PATH_APP_BD_USERS);
-            ois = new ObjectInputStream(fis);
-            u = (HashMap<String, Cuenta>) ois.readObject();
-            ois.close();
-            
-            //Genera la base de datos
-            BaseDatos bd = new BaseDatos(u, r);
-            return bd;
+            if(fLib.exists() && fUsr.exists()){
+                //Carga el archivo de la libreria
+                fis = new FileInputStream(PATH_APP_BD_LIB);
+                ois = new ObjectInputStream(fis);
+                r = (HashMap<Integer, Reproducible>) ois.readObject();     
+                ois.close();
+
+                //Carga el archivo de los usuarios
+                fis = new FileInputStream(PATH_APP_BD_USERS);
+                ois = new ObjectInputStream(fis);
+                u = (HashMap<String, Cuenta>) ois.readObject();
+                ois.close();
+
+                //Genera la base de datos
+                BaseDatos bd = BaseDatos.getBaseDatos();
+                bd.setCuentas(u);
+                bd.setLibreria(r);
+                return bd;
+            }
+            else
+                return BaseDatos.getBaseDatos();
             
         } catch (ClassNotFoundException | FileNotFoundException ex) {
                 Logger.getLogger(FileHandler.class.getName()).log(Level.SEVERE, null, ex);
