@@ -21,9 +21,9 @@
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
-              <EmptySpace min="-2" pref="359" max="-2" attributes="0"/>
-              <Component id="jButton1" min="-2" pref="84" max="-2" attributes="0"/>
-              <EmptySpace pref="378" max="32767" attributes="0"/>
+              <EmptySpace min="-2" pref="294" max="-2" attributes="0"/>
+              <Component id="salir" min="-2" pref="84" max="-2" attributes="0"/>
+              <EmptySpace pref="443" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -31,19 +31,19 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace min="-2" pref="379" max="-2" attributes="0"/>
-              <Component id="jButton1" pref="39" max="32767" attributes="0"/>
+              <Component id="salir" pref="39" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Component class="javax.swing.JButton" name="jButton1">
+    <Component class="javax.swing.JButton" name="salir">
       <Properties>
         <Property name="text" type="java.lang.String" value="Salir"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="salirActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>

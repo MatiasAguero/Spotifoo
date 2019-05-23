@@ -85,6 +85,15 @@ public class Cancion extends Reproducible{
     public String getNombre() {
         return nombre;
     }
+
+    @Override
+    public boolean perteneceArtista(String a) {
+        return artista.getNombre().equals(a);
+    }
+    @Override
+    public boolean perteneceGenero(String genero){
+        return this.genero.equals(genero);
+    }
     
     
 }
