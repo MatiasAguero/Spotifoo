@@ -17,8 +17,10 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.net.URL;
 import java.util.Map;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -63,8 +65,10 @@ public class ventanaUsuario extends javax.swing.JFrame {
     private JButton playButton;
     private JButton previousButton;
     private JButton nextButton;
+    private final static String URL_PLAY = "img/botones/play.png";
+    private final static String URL_PREVIOUS = "img/botones/previous.png";
+    private final static String URL_NEXT = "img/botones/next.png";
     
-    BaseDatos bd;
     GestorLibreria gestorLibreria;
     Usuario usuario;
     
@@ -72,14 +76,14 @@ public class ventanaUsuario extends javax.swing.JFrame {
     FGenero filtroXGenero;
     FNombre filtroXNombre;
     
-    private Graphics imgCancion;
+    private JPanel imgPanel;
+    private JLabel img;
     
     public ventanaUsuario(Usuario u) {
         initComponents();
         configurarFrame();
         
-        bd = BaseDatos.getBaseDatos();
-        gestorLibreria = new GestorLibreria(bd);
+        gestorLibreria = new GestorLibreria(BaseDatos.getBaseDatos());
         usuario = u;
         
         generarLayoutExplorador();
@@ -95,6 +99,17 @@ public class ventanaUsuario extends javax.swing.JFrame {
                 botonBuscarActionPerformed(evt);
             }
         });
+        playButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                playButtonActionPerformed(evt);
+            }
+
+            private void playButtonActionPerformed(ActionEvent evt) {
+                String cancionSeleccionada = resultadoBusquedaList.getSelectedItem();
+                setImg("img/canciones/"+cancionSeleccionada.replace(" ","_")+".jpg");
+            }
+        });
         
     }
     
@@ -102,8 +117,7 @@ public class ventanaUsuario extends javax.swing.JFrame {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                bd = BaseDatos.getBaseDatos();
-                bd.guardarDatos();
+                BaseDatos.getBaseDatos().guardarDatos();
                 System.exit(0);
             }
         });
@@ -120,21 +134,31 @@ public class ventanaUsuario extends javax.swing.JFrame {
         
         generarLayoutPlaylist();
         JScrollPane playlists = new JScrollPane(playlistsPanel);
-        
+        imgPanel = new JPanel();
+        img = new JLabel();
+        imgPanel.add(img,BorderLayout.CENTER);
+        setImg("img/despacito.jpg");
+        JSplitPane izqSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, playlists, imgPanel);
+        izqSplit.setDividerSize(1);
+        izqSplit.setEnabled(false);
         //**********************************************************
         //************INSERTAR EXPLORADOR DE BIBLIOTECA*************
         
-        //Crea el divisor superior con la playlist y el explorador de la biblioteca 
+        //Crea el divisor superior con la izqSplit y el explorador de la biblioteca 
         buscadorPanel = new JPanel();
         generarLayoutBuscador();
-        JSplitPane topSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, playlists, buscadorPanel);
+        JSplitPane topSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, izqSplit, buscadorPanel);
         topSplit.setDividerSize(1);
         topSplit.setEnabled(false);
+        
         //Crea el divisor inferior, donde va el reproductor
+        
+        //Inserta en la pestaña Principal todos los componentes creados
         reproductorPanel = new JPanel();
         generarLayoutReproductor();
-        //Inserta en la pestaña Principal todos los componentes creados
         JSplitPane tabPrincipal = new JSplitPane(JSplitPane.VERTICAL_SPLIT, topSplit, reproductorPanel);
+        
+        
         tabs.addTab("Explorar", tabPrincipal);
         
         //tab = new JTextArea();
@@ -150,9 +174,9 @@ public class ventanaUsuario extends javax.swing.JFrame {
     
     private void generarLayoutReproductor(){
 
-        playButton = new JButton(new ImageIcon("img/play.png"));
-        previousButton = new JButton(new ImageIcon("img/previous.png"));
-        nextButton = new JButton(new ImageIcon("img/next.png"));
+        playButton = new JButton(new ImageIcon(URL_PLAY));
+        previousButton = new JButton(new ImageIcon(URL_PREVIOUS));
+        nextButton = new JButton(new ImageIcon(URL_NEXT));
         
         JPanel botonesPanel = new JPanel();
         botonesPanel.setLayout(new BoxLayout(botonesPanel, BoxLayout.LINE_AXIS));
@@ -163,12 +187,10 @@ public class ventanaUsuario extends javax.swing.JFrame {
         
         reproductorPanel.add(botonesPanel);
         
-        /*
-        JPanel imgCancionPanel = new JPanel();
-        ImageIcon img = new ImageIcon(getClass().getResource("img/despacito.jpg"));
-        imgCancion.drawImage(img.getImage(), 30, 30, null);
-        reproductorPanel.paint(imgCancion);
-        reproductorPanel.add(botonesPanel,BorderLayout.PAGE_END);*/
+    }
+    
+    private void setImg(String url){
+        img.setIcon (new ImageIcon(url)); 
     }
     
     private void generarLayoutBuscador(){
@@ -260,9 +282,9 @@ public class ventanaUsuario extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(379, 379, 379)
-                .addComponent(salir, javax.swing.GroupLayout.DEFAULT_SIZE, 39, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(467, Short.MAX_VALUE)
+                .addComponent(salir, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -307,4 +329,6 @@ public class ventanaUsuario extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton salir;
     // End of variables declaration//GEN-END:variables
+
+
 }
