@@ -27,6 +27,9 @@ public abstract class Reproducible implements Serializable{
         return nombre;
     }
     
+    public abstract boolean perteneceArtista(String artista);
+    public abstract boolean perteneceGenero(String genero);
+    
     public void play(){
         //*****TO-DO*******
     }

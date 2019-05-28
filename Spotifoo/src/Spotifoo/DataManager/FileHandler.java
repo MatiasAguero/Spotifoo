@@ -22,8 +22,8 @@ public class FileHandler {
 
     public static final String FS = System.getProperty("file.Separator");
     public static final String PATH_APP_DATA = FS+"resources"+FS;
-    public static final String PATH_APP_BD_USERS = FS+"resources"+FS+"bd"+FS+"users";
-    public static final String PATH_APP_BD_LIB = FS+"resources"+FS+"bd"+FS+"lib";
+    public static final String PATH_APP_BD_USERS = "users";
+    public static final String PATH_APP_BD_LIB = "lib";
     
     //Carga un archivo de musica guardado de manera local en la direccion indicada por parametro
     public static Reproducible loadFile(String path){

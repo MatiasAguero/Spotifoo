@@ -52,4 +52,8 @@ public class Artista implements Serializable{
         return nombre;
     }
     
+    public boolean equals(Artista a){
+        return a.getNombre().equals(nombre) && a.getGenero().equals(genero) &&
+                a.getAñoFormacion() == añoFormacion;
+    }
 }

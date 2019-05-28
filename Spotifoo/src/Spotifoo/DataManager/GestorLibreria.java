@@ -14,6 +14,7 @@ import java.util.List;
 public class GestorLibreria {
     
     BaseDatos bd; 
+    List<Artista> artistas;
         
     public GestorLibreria(){
         this.bd = FileHandler.loadDB();

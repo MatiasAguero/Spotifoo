@@ -31,6 +31,10 @@ public class Usuario extends Cuenta{
         this.bibliotecaPersonal.add(r);
     }
     
+    public void createPlaylist(String nombrePlaylist){
+        playlist.put(nombrePlaylist, new ConjuntoCanciones(nombrePlaylist));
+    }
+    
     public void addListaReproducible(Reproducible r,String nombrePlayList){
          for (Map.Entry<String,ConjuntoCanciones> entry : playlist.entrySet()) {
             if (entry.getKey().equals(nombrePlayList))
@@ -50,8 +54,13 @@ public class Usuario extends Cuenta{
         //TODO....
     }
 
+    public HashMap<String, ConjuntoCanciones> getPlaylist() {
+        return playlist;
+    }  
+    
+
     @Override
     public JFrame getFrame() {
-        return new ventanaUsuario();
+        return new ventanaUsuario(this);
     }
 }

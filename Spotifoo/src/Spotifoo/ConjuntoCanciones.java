@@ -40,4 +40,21 @@ public class ConjuntoCanciones extends Reproducible{
         }
         return salida;
     }
+    
+    @Override
+    public boolean perteneceArtista(String a) {
+        for (Reproducible r:canciones){
+            if (r.perteneceArtista(a) == false)
+                return false;
+        }
+        return true;
+    }
+    @Override
+    public boolean perteneceGenero(String genero){
+        for (Reproducible r:canciones){
+            if (r.perteneceGenero(genero) == false)
+                return false;
+        }
+        return true;
+    }
 }
