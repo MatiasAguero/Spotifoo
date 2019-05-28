@@ -16,14 +16,15 @@ import java.io.ObjectOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
+import java.nio.file.Files;
 import java.util.HashMap;
 
 public class FileHandler {
 
-    public static final String FS = System.getProperty("file.Separator");
-    public static final String PATH_APP_DATA = FS+"resources"+FS;
-    public static final String PATH_APP_BD_USERS = FS+"resources"+FS+"bd"+FS+"users";
-    public static final String PATH_APP_BD_LIB = FS+"resources"+FS+"bd"+FS+"lib";
+    public static final String FS = System.getProperty("file.separator");
+    public static final String PATH_APP_DATA = "."+FS+"resources";
+    public static final String PATH_APP_BD_USERS = "."+FS+"resources"+FS+"bd"+FS+"users";
+    public static final String PATH_APP_BD_LIB = "."+FS+"resources"+FS+"bd"+FS+"lib";
     
     //Carga un archivo de musica guardado de manera local en la direccion indicada por parametro
     public static Reproducible loadFile(String path){
@@ -84,6 +85,7 @@ public class FileHandler {
 
         try {
             
+            generateDirTree();
             //Trunca los archivos originales para escribir los datos nuevos
             new PrintWriter(PATH_APP_BD_LIB).close();
             new PrintWriter(PATH_APP_BD_USERS).close();
@@ -122,6 +124,7 @@ public class FileHandler {
         try {
             
             if(fLib.exists() && fUsr.exists()){
+                
                 //Carga el archivo de la libreria
                 fis = new FileInputStream(PATH_APP_BD_LIB);
                 ois = new ObjectInputStream(fis);
@@ -151,6 +154,18 @@ public class FileHandler {
         }
 
         return null;
+        
+    }
+    
+    private static void generateDirTree(){
+        
+        try {
+            Files.createDirectory(new File(PATH_APP_DATA).toPath());
+            Files.createDirectory(new File(PATH_APP_DATA+FS+"bd").toPath());
+            
+        } catch (IOException ex) {
+            Logger.getLogger(FileHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
     }
 
