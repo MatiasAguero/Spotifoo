@@ -1,26 +1,26 @@
 package Interfaz;
 
+import Spotifoo.Cancion;
 import Spotifoo.ConjuntoCanciones;
 import java.awt.List;
 import Spotifoo.DataManager.BaseDatos;
 import Spotifoo.DataManager.GestorLibreria;
+import Spotifoo.Filtro.And;
 import Spotifoo.Filtro.FArtista;
 import Spotifoo.Filtro.FGenero;
 import Spotifoo.Filtro.FNombre;
 import Spotifoo.Filtro.Filtro;
+import Spotifoo.Filtro.Or;
 import Spotifoo.Reproducible;
 import Spotifoo.Usuario;
-import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.net.URL;
+import java.util.ArrayList;
 import java.util.Map;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -30,8 +30,8 @@ import static javax.swing.GroupLayout.Alignment.BASELINE;
 import static javax.swing.GroupLayout.Alignment.LEADING;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -51,20 +51,23 @@ public class ventanaUsuario extends javax.swing.JFrame {
     private JPanel buscadorPanel;
     private JPanel playlistsPanel;
     private JTextField textField;
+    private JTextField textField2;
     private JLabel buscarLabel;
-    private JRadioButton tituloCheckBox;
-    private JRadioButton artistaCheckBox;
-    private JRadioButton generoCheckBox;
-    private JRadioButton usuarioCheckBox;
-    private JRadioButton compuestoCheckBox;
-    private JRadioButton condicion;
+    private JRadioButton tituloRadioButton;
+    private JRadioButton artistaRadioButton;
+    private JRadioButton generoRadioButton;
+    private JCheckBox compuestoCheckBox;
+    private JRadioButton andRadioButton;
+    private JRadioButton orRadioButton;
     private JButton botonBuscar;
+    private JButton botonrestartFiltro;
     private List resultadoBusquedaList;
     private List playlistsList;
     
     private JButton playButton;
     private JButton previousButton;
     private JButton nextButton;
+    private JButton addPlaylistButton;
     private final static String URL_PLAY = "img/botones/play.png";
     private final static String URL_PREVIOUS = "img/botones/previous.png";
     private final static String URL_NEXT = "img/botones/next.png";
@@ -72,19 +75,18 @@ public class ventanaUsuario extends javax.swing.JFrame {
     GestorLibreria gestorLibreria;
     Usuario usuario;
     
-    FArtista filtroXArtista;
-    FGenero filtroXGenero;
-    FNombre filtroXNombre;
+    Filtro filtro;
+    Filtro filtroComp;
+    Filtro filtroAnt;
     
-    private JPanel imgPanel;
     private JLabel img;
-    
     public ventanaUsuario(Usuario u) {
         initComponents();
         configurarFrame();
         
         gestorLibreria = new GestorLibreria(BaseDatos.getBaseDatos());
         usuario = u;
+        Filtro filtroAnt = null;
         
         generarLayoutExplorador();
         
@@ -107,10 +109,16 @@ public class ventanaUsuario extends javax.swing.JFrame {
 
             private void playButtonActionPerformed(ActionEvent evt) {
                 String cancionSeleccionada = resultadoBusquedaList.getSelectedItem();
-                setImg("img/canciones/"+cancionSeleccionada.replace(" ","_")+".jpg");
+                String[] cancion = cancionSeleccionada.split(" | ");
+                setImg("img/canciones/"+cancion[0].replace(" ","_")+".jpg");
             }
         });
-        
+        botonrestartFiltro.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                filtroAnt = null;
+            }
+        });
     }
     
     private void eventosVentana(){
@@ -132,29 +140,20 @@ public class ventanaUsuario extends javax.swing.JFrame {
         //Genera los componentes para insertar dentro de la pestaña principal
         //El componente donde van las playlist
         
-        generarLayoutPlaylist();
-        JScrollPane playlists = new JScrollPane(playlistsPanel);
-        imgPanel = new JPanel();
-        img = new JLabel();
-        imgPanel.add(img,BorderLayout.CENTER);
-        setImg("img/despacito.jpg");
-        JSplitPane izqSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, playlists, imgPanel);
-        izqSplit.setDividerSize(1);
-        izqSplit.setEnabled(false);
         //**********************************************************
         //************INSERTAR EXPLORADOR DE BIBLIOTECA*************
         
         //Crea el divisor superior con la izqSplit y el explorador de la biblioteca 
-        buscadorPanel = new JPanel();
         generarLayoutBuscador();
-        JSplitPane topSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, izqSplit, buscadorPanel);
-        topSplit.setDividerSize(1);
+        generarLayoutPlaylist();
+        JScrollPane playlists = new JScrollPane(playlistsPanel);
+        JSplitPane topSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, playlists, buscadorPanel);
+        topSplit.setDividerSize(0);
         topSplit.setEnabled(false);
         
         //Crea el divisor inferior, donde va el reproductor
         
         //Inserta en la pestaña Principal todos los componentes creados
-        reproductorPanel = new JPanel();
         generarLayoutReproductor();
         JSplitPane tabPrincipal = new JSplitPane(JSplitPane.VERTICAL_SPLIT, topSplit, reproductorPanel);
         
@@ -166,18 +165,21 @@ public class ventanaUsuario extends javax.swing.JFrame {
         //JComponent panel2 = makeTextPanel("Panel #2");
         tabs.insertTab("Mi Bilbioteca", null, new JPanel(), null, 1);
         
-        tabPrincipal.setDividerSize(1);
+        tabPrincipal.setDividerSize(0);
         tabPrincipal.setEnabled(false);
         tabPrincipal.setResizeWeight(0.9);
                 
     }
     
     private void generarLayoutReproductor(){
-
+        reproductorPanel = new JPanel();
         playButton = new JButton(new ImageIcon(URL_PLAY));
         previousButton = new JButton(new ImageIcon(URL_PREVIOUS));
         nextButton = new JButton(new ImageIcon(URL_NEXT));
-        
+        playButton.setBackground(Color.WHITE);
+        previousButton.setBackground(Color.WHITE);
+        nextButton.setBackground(Color.WHITE);
+                
         JPanel botonesPanel = new JPanel();
         botonesPanel.setLayout(new BoxLayout(botonesPanel, BoxLayout.LINE_AXIS));
         botonesPanel.add(Box.createRigidArea(new Dimension(10, 0)));
@@ -194,20 +196,27 @@ public class ventanaUsuario extends javax.swing.JFrame {
     }
     
     private void generarLayoutBuscador(){
+        buscadorPanel = new JPanel();
         textField = new JTextField();
         buscarLabel = new JLabel("Buscar:");;
-        tituloCheckBox = new JRadioButton("Titulo");
-        artistaCheckBox = new JRadioButton("Artista");
-        generoCheckBox = new JRadioButton("Genero");
-        usuarioCheckBox = new JRadioButton("Usuario");
+        tituloRadioButton = new JRadioButton("Titulo");
+        artistaRadioButton = new JRadioButton("Artista");
+        generoRadioButton = new JRadioButton("Genero");
+        compuestoCheckBox = new JCheckBox("Compuesto");
+        andRadioButton = new JRadioButton("And");
+        orRadioButton = new JRadioButton("Or");
         ButtonGroup editableGroup = new ButtonGroup();
-        editableGroup.add(tituloCheckBox);
-        editableGroup.add(artistaCheckBox);
-        editableGroup.add(generoCheckBox);
-        editableGroup.add(usuarioCheckBox);
+        editableGroup.add(tituloRadioButton);
+        editableGroup.add(artistaRadioButton);
+        editableGroup.add(generoRadioButton);
+        ButtonGroup editableGroup2 = new ButtonGroup();
+        editableGroup2.add(andRadioButton);
+        editableGroup2.add(orRadioButton);
         botonBuscar = new JButton("Buscar");
+        botonrestartFiltro = new JButton("Restablecer");
         resultadoBusquedaList = new List();
-        tituloCheckBox.setSelected(true);
+        tituloRadioButton.setSelected(true);
+        andRadioButton.setSelected(true);
         
         GroupLayout layout = new GroupLayout(buscadorPanel);
         buscadorPanel.setLayout(layout);
@@ -219,13 +228,16 @@ public class ventanaUsuario extends javax.swing.JFrame {
             .addGroup(layout.createParallelGroup(LEADING)
                 .addComponent(textField)
                 .addGroup(layout.createSequentialGroup()
-                    .addComponent(tituloCheckBox)
-                    .addComponent(artistaCheckBox)
-                    .addComponent(generoCheckBox)
-                    .addComponent(usuarioCheckBox))
-                    .addComponent(resultadoBusquedaList))
+                    .addComponent(tituloRadioButton)
+                    .addComponent(artistaRadioButton)
+                    .addComponent(generoRadioButton)
+                    .addComponent(compuestoCheckBox)
+                    .addComponent(andRadioButton)
+                    .addComponent(orRadioButton))
+                .addComponent(resultadoBusquedaList))
             .addGroup(layout.createParallelGroup(LEADING)
-                .addComponent(botonBuscar))
+                .addComponent(botonBuscar)
+                .addComponent(botonrestartFiltro))
         );
  
         layout.setVerticalGroup(layout.createSequentialGroup()
@@ -234,10 +246,13 @@ public class ventanaUsuario extends javax.swing.JFrame {
                 .addComponent(textField)
                 .addComponent(botonBuscar))
             .addGroup(layout.createParallelGroup(LEADING)
-                .addComponent(tituloCheckBox)
-                .addComponent(artistaCheckBox)
-                .addComponent(generoCheckBox)
-                .addComponent(usuarioCheckBox))
+                .addComponent(tituloRadioButton)
+                .addComponent(artistaRadioButton)
+                .addComponent(generoRadioButton)
+                .addComponent(compuestoCheckBox)
+                .addComponent(andRadioButton)
+                .addComponent(orRadioButton)
+                .addComponent(botonrestartFiltro)) 
             .addGroup(layout.createParallelGroup(LEADING)
                 .addComponent(resultadoBusquedaList))
         );
@@ -250,9 +265,15 @@ public class ventanaUsuario extends javax.swing.JFrame {
         JLabel playlistsLabel = new JLabel("Playlists");
         playlistsLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         playlistsList = new List();
-        
+        addPlaylistButton = new JButton("Agregar playlist");
+        addPlaylistButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        img = new JLabel();
+        img.setAlignmentX(Component.CENTER_ALIGNMENT);
+                
         playlistsPanel.add(playlistsLabel);
         playlistsPanel.add(playlistsList);
+        playlistsPanel.add(addPlaylistButton);
+        playlistsPanel.add(img);
         
         //Agregacion de las playlists del usuario en la lista
         for (Map.Entry<String, ConjuntoCanciones> entry : usuario.getPlaylist().entrySet()) {
@@ -262,60 +283,60 @@ public class ventanaUsuario extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        salir = new javax.swing.JButton();
-
-        salir.setText("Salir");
-        salir.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                salirActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(294, 294, 294)
-                .addComponent(salir, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(443, Short.MAX_VALUE))
+            .addGap(0, 956, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(467, Short.MAX_VALUE)
-                .addComponent(salir, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+            .addGap(0, 521, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void salirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_salirActionPerformed
-        // TODO add your handling code here:
-        System.exit(0);
-    }//GEN-LAST:event_salirActionPerformed
     
     private void botonBuscarActionPerformed(java.awt.event.ActionEvent evt) {                                         
         String aBuscar = textField.getText();
         resultadoBusquedaList.clear();
-        if(artistaCheckBox.isSelected()){
-            filtroXArtista = new FArtista(aBuscar);
-            filtrarCanciones(filtroXArtista);
+        if(artistaRadioButton.isSelected()){
+            filtro = new FArtista(aBuscar);
+            if (compuestoCheckBox.isSelected() && filtroAnt != null){
+                if (andRadioButton.isSelected())
+                    filtro = new And(filtro,filtroAnt );
+                else
+                    filtro = new Or(filtro,filtroAnt );  
+            }
+            filtrarCanciones(filtro);
         }
-        else if(generoCheckBox.isSelected()){
-            filtroXGenero = new FGenero(aBuscar);
-            filtrarCanciones(filtroXGenero);
+        else if(generoRadioButton.isSelected() ){
+            filtro = new FGenero(aBuscar);
+            if (compuestoCheckBox.isSelected() && filtroAnt != null){
+                if (andRadioButton.isSelected())
+                    filtro = new And(filtro,filtroAnt );
+                else
+                    filtro = new Or(filtro,filtroAnt );  
+            }
+            filtrarCanciones(filtro);
         }
-        else {
-            filtroXNombre = new FNombre(aBuscar); 
-            filtrarCanciones(filtroXNombre);
+        else{
+            filtro = new FNombre(aBuscar); 
+            if (compuestoCheckBox.isSelected() && filtroAnt != null){
+                if (andRadioButton.isSelected())
+                    filtro = new And(filtro,filtroAnt );
+                else
+                    filtro = new Or(filtro,filtroAnt );  
+            }
+            filtrarCanciones(filtro);
         }
+        filtroAnt = filtro;
     } 
     
     private void filtrarCanciones(Filtro f){
         for (Reproducible r : gestorLibreria.buscar(f)){
-                resultadoBusquedaList.add(r.getNombre());
+                Cancion c = (Cancion) r;
+                resultadoBusquedaList.add(c.getNombre() +" | " + c.getArtista().getNombre() + " | "+ c.getGenero());
             }
     }
 
@@ -327,7 +348,6 @@ public class ventanaUsuario extends javax.swing.JFrame {
         setVisible(true);
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton salir;
     // End of variables declaration//GEN-END:variables
 
 

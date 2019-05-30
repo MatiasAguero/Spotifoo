@@ -22,7 +22,7 @@ public class Spotifoo {
         Artista a = new Artista ("Daddy yankee","Reggeaton",l,2001);
         Cancion c = new Cancion("Despacito",a,"Reggeaton","2018");
         Cancion c2 = new Cancion("Con Calma",a,"Reggeaton","2019");
-        Cancion c3 = new Cancion("Adictiva",a,"Reggeaton","2018");
+        Cancion c3 = new Cancion("Adictiva",a,"Trap","2018");
         Cancion c4 = new Cancion("Baila Baila Baila",a,"Reggeaton","2018");
         Cancion c5 = new Cancion("Date la vuelta",a,"Reggeaton","2019");
         
