@@ -1,9 +1,9 @@
 package Interfaz;
 
 import Spotifoo.ConjuntoCanciones;
+import Spotifoo.DataManager.DAO;
 import java.awt.List;
-import Spotifoo.DataManager.BaseDatos;
-import Spotifoo.DataManager.GestorLibreria;
+import Spotifoo.DataManager.DAO_FS;
 import Spotifoo.Filtro.FArtista;
 import Spotifoo.Filtro.FGenero;
 import Spotifoo.Filtro.FNombre;
@@ -17,6 +17,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.ScrollPane;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -39,7 +40,7 @@ import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
-
+import javax.swing.ListSelectionModel;
 /**
  *
  * @author nico
@@ -49,6 +50,7 @@ public class ventanaUsuario extends javax.swing.JFrame {
     private JButton boton;
     private Container reproductorPanel;
     private JPanel buscadorPanel;
+    private JPanel bibliotecaPanel;
     private JPanel playlistsPanel;
     private JTextField textField;
     private JLabel buscarLabel;
@@ -61,6 +63,7 @@ public class ventanaUsuario extends javax.swing.JFrame {
     private JButton botonBuscar;
     private List resultadoBusquedaList;
     private List playlistsList;
+    private JList listaPlaylist;
     
     private JButton playButton;
     private JButton previousButton;
@@ -69,7 +72,7 @@ public class ventanaUsuario extends javax.swing.JFrame {
     private final static String URL_PREVIOUS = "img/botones/previous.png";
     private final static String URL_NEXT = "img/botones/next.png";
     
-    GestorLibreria gestorLibreria;
+    DAO db;
     Usuario usuario;
     
     FArtista filtroXArtista;
@@ -78,12 +81,23 @@ public class ventanaUsuario extends javax.swing.JFrame {
     
     private JPanel imgPanel;
     private JLabel img;
+    private JScrollPane listScroller;
+    private JButton botonAdd;
+    private JButton botonEdit;
+    private JButton botonDel;
+    private JPanel playlistOptionPanel;
+    private Component listaCanciones;
+    private JPanel SongsOptionPanel;
+    private JButton botonAdd2;
+    private JButton botonDownload;
+    private JScrollPane CancionesScroller;
+    
     
     public ventanaUsuario(Usuario u) {
         initComponents();
         configurarFrame();
         
-        gestorLibreria = new GestorLibreria(BaseDatos.getBaseDatos());
+        db = DAO_FS.getBaseDatos();
         usuario = u;
         
         generarLayoutExplorador();
@@ -115,11 +129,11 @@ public class ventanaUsuario extends javax.swing.JFrame {
     
     private void eventosVentana(){
         addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                BaseDatos.getBaseDatos().guardarDatos();
-                System.exit(0);
-            }
+//            @Override
+//            public void windowClosing(WindowEvent e) {
+//                DAO_FS.getBaseDatos().guardarDatos();
+//                System.exit(0);
+//            }
         });
     }
     
@@ -131,7 +145,6 @@ public class ventanaUsuario extends javax.swing.JFrame {
         
         //Genera los componentes para insertar dentro de la pestaña principal
         //El componente donde van las playlist
-        
         generarLayoutPlaylist();
         JScrollPane playlists = new JScrollPane(playlistsPanel);
         imgPanel = new JPanel();
@@ -141,8 +154,6 @@ public class ventanaUsuario extends javax.swing.JFrame {
         JSplitPane izqSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, playlists, imgPanel);
         izqSplit.setDividerSize(1);
         izqSplit.setEnabled(false);
-        //**********************************************************
-        //************INSERTAR EXPLORADOR DE BIBLIOTECA*************
         
         //Crea el divisor superior con la izqSplit y el explorador de la biblioteca 
         buscadorPanel = new JPanel();
@@ -152,10 +163,10 @@ public class ventanaUsuario extends javax.swing.JFrame {
         topSplit.setEnabled(false);
         
         //Crea el divisor inferior, donde va el reproductor
-        
-        //Inserta en la pestaña Principal todos los componentes creados
         reproductorPanel = new JPanel();
         generarLayoutReproductor();
+        
+        //Inserta en la pestaña Principal todos los componentes creados
         JSplitPane tabPrincipal = new JSplitPane(JSplitPane.VERTICAL_SPLIT, topSplit, reproductorPanel);
         
         
@@ -163,8 +174,9 @@ public class ventanaUsuario extends javax.swing.JFrame {
         
         //tab = new JTextArea();
 
-        //JComponent panel2 = makeTextPanel("Panel #2");
-        tabs.insertTab("Mi Bilbioteca", null, new JPanel(), null, 1);
+        
+        this.generarLayoutBiblioteca();
+        tabs.insertTab("Mi Biblioteca", null, bibliotecaPanel, null, 1);
         
         tabPrincipal.setDividerSize(1);
         tabPrincipal.setEnabled(false);
@@ -195,7 +207,7 @@ public class ventanaUsuario extends javax.swing.JFrame {
     
     private void generarLayoutBuscador(){
         textField = new JTextField();
-        buscarLabel = new JLabel("Buscar:");;
+        buscarLabel = new JLabel("Buscar:");
         tituloCheckBox = new JRadioButton("Titulo");
         artistaCheckBox = new JRadioButton("Artista");
         generoCheckBox = new JRadioButton("Genero");
@@ -259,6 +271,70 @@ public class ventanaUsuario extends javax.swing.JFrame {
             playlistsList.add(entry.getKey());
         }
     }
+    
+    private void generarLayoutBiblioteca(){
+        
+        bibliotecaPanel = new JPanel();
+        bibliotecaPanel.setLayout(new GridBagLayout());
+        listaPlaylist = new JList(usuario.getPlaylist().entrySet().toArray());
+        listaCanciones = new JList(usuario.getBiblioteca().toArray());
+        
+        listaPlaylist.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        listaPlaylist.setLayoutOrientation(JList.VERTICAL);
+        listaPlaylist.setVisibleRowCount(-1);
+
+        listScroller = new JScrollPane(listaPlaylist);
+        GridBagConstraints c = new GridBagConstraints();        
+        c.fill = GridBagConstraints.VERTICAL;
+        c.gridx=0;
+        c.gridy=1;
+        bibliotecaPanel.add(listScroller, c);
+        
+        playlistOptionPanel = new JPanel();
+        playlistOptionPanel.setLayout(new BoxLayout(playlistOptionPanel, BoxLayout.LINE_AXIS));
+        
+        botonAdd = new JButton("+");
+        playlistOptionPanel.add(botonAdd);
+        playlistOptionPanel.add(Box.createRigidArea(new Dimension(5,0)));
+        botonEdit = new JButton("E");
+        playlistOptionPanel.add(botonEdit);
+        playlistOptionPanel.add(Box.createRigidArea(new Dimension(5,0)));
+        botonDel = new JButton("X");
+        playlistOptionPanel.add(botonDel);
+        
+        c = new GridBagConstraints();
+        c.gridx=0;
+        c.gridy=2;
+        bibliotecaPanel.add(playlistOptionPanel, c);
+                
+        c = new GridBagConstraints();
+        c.fill = GridBagConstraints.BOTH;
+        c.gridx=1;
+        c.gridy=1;
+        bibliotecaPanel.add(new JPanel(), c);
+        
+        CancionesScroller = new JScrollPane(listaCanciones);
+        c = new GridBagConstraints();
+        c.fill = GridBagConstraints.VERTICAL;
+        c.gridx=2;
+        c.gridy=1;
+        bibliotecaPanel.add(CancionesScroller, c);
+        
+        SongsOptionPanel = new JPanel();
+        SongsOptionPanel.setLayout(new BoxLayout(SongsOptionPanel, BoxLayout.LINE_AXIS));
+        
+        botonAdd2 = new JButton("Añadir");
+        SongsOptionPanel.add(botonAdd2);
+        SongsOptionPanel.add(Box.createRigidArea(new Dimension(5,0)));
+        botonDownload = new JButton("Descargar");
+        SongsOptionPanel.add(botonDownload);
+        
+        c = new GridBagConstraints();
+        c.gridx=2;
+        c.gridy=2;
+        bibliotecaPanel.add(SongsOptionPanel, c);
+    }
+    
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -314,7 +390,7 @@ public class ventanaUsuario extends javax.swing.JFrame {
     } 
     
     private void filtrarCanciones(Filtro f){
-        for (Reproducible r : gestorLibreria.buscar(f)){
+        for (Reproducible r : db.buscar(f)){
                 resultadoBusquedaList.add(r.getNombre());
             }
     }

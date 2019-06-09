@@ -5,7 +5,7 @@
  */
 package Interfaz;
 
-import Spotifoo.DataManager.BaseDatos;
+import Spotifoo.DataManager.DAO_FS;
 import Spotifoo.Usuario;
 import javax.swing.JOptionPane;
 
@@ -18,12 +18,12 @@ public class VentanaCreacionCuenta extends javax.swing.JFrame {
     /**
      * Creates new form VentanaCreacionCuenta
      */
-    BaseDatos bd;
+    DAO_FS bd;
     public VentanaCreacionCuenta() {
         initComponents();
         this.setTitle("Spotifoo");
         setLocationRelativeTo(null);
-        this.bd = BaseDatos.getBaseDatos();
+        this.bd = DAO_FS.getBaseDatos();
     }
 
     /**
