@@ -1,7 +1,7 @@
 package Spotifoo;
 
 import Interfaz.ventanaUsuario;
-import Spotifoo.DataManager.FileHandler;
+import Spotifoo.DataManager.DAO_FS;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,7 +43,7 @@ public class Usuario extends Cuenta{
     }
 
     public void loadLocal(String path){
-        this.addElem(FileHandler.loadFile(path));
+        this.addElem(DAO_FS.getBaseDatos().loadFile(path));
     }
 
     public void saveServer(String path){

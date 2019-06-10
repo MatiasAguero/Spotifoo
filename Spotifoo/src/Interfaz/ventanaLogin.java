@@ -1,12 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Interfaz;
 
 import Spotifoo.Cuenta;
-import Spotifoo.DataManager.BaseDatos;
+import Spotifoo.DataManager.DAO_FS;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -19,21 +14,21 @@ import javax.swing.JOptionPane;
  */
 public class ventanaLogin extends javax.swing.JFrame{
 
-    BaseDatos bd;
+    DAO_FS bd;
     public ventanaLogin() {
         initComponents();
         this.setTitle("Spotifoo");
         setLocationRelativeTo(null);
-        this.bd = BaseDatos.getBaseDatos();
+        this.bd = DAO_FS.getBaseDatos();
         this.setVisible(true);
         addWindowListener(new WindowAdapter() {
 
-            @Override
-            public void windowClosing(WindowEvent e) {
-                bd = BaseDatos.getBaseDatos();
-                bd.guardarDatos();
-                System.exit(0);
-            }
+//            @Override
+//            public void windowClosing(WindowEvent e) {
+//                bd = DAO_FS.getBaseDatos();
+//                bd.guardarDatos();
+//                System.exit(0);
+//            }
         });
     }
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -127,10 +122,10 @@ public class ventanaLogin extends javax.swing.JFrame{
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         String nombreUsuario = jTextField2.getText();
         String contraseña = jPasswordField1.getText();
+        Cuenta c;
         
-        if (bd.connect(nombreUsuario, contraseña)){
+        if ((c = bd.getCuenta(nombreUsuario, contraseña)) != null){
             setVisible(false);
-            Cuenta c = bd.getCuenta(nombreUsuario, contraseña);
             c.getFrame().setVisible(true);
         }
         else

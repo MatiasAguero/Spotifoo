@@ -2,19 +2,14 @@
 package Spotifoo;
 
 import Interfaz.ventanaLogin;
-import Spotifoo.DataManager.BaseDatos;
-import Spotifoo.DataManager.FileHandler;
-import Spotifoo.DataManager.GestorLibreria;
-import Spotifoo.Filtro.*;
+import Spotifoo.DataManager.DAO_FS;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 public class Spotifoo {
 
     public static void main(String[] args) {
         
-        BaseDatos bd = BaseDatos.getBaseDatos();
+        DAO_FS bd = DAO_FS.getBaseDatos();
         Usuario u = new Usuario("nico","1234");
         bd.addCuenta(u);
         
