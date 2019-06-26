@@ -1,5 +1,6 @@
 package Spotifoo;
 
+import Interfaz.ventanaAdministrador;
 import Spotifoo.DataManager.DAO_FS;
 import javax.swing.JFrame;
 
@@ -27,7 +28,7 @@ public class Admin extends Cuenta{
 
     @Override
     public JFrame getFrame() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new ventanaAdministrador();
     }
     
 }

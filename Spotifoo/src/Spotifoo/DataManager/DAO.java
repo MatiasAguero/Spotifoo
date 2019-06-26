@@ -27,5 +27,12 @@ public abstract class DAO {
     public abstract void delCuenta(Cuenta c);
     
     public abstract void addCuenta(Cuenta c);
+ 
+    public HashMap<String, Cuenta> getCuentas(){
+        return cuentas;
+    }
     
+    public HashMap<Integer, Reproducible> getLibreria(){
+        return libreria;
+    }
 }

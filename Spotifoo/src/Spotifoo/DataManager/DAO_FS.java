@@ -222,6 +222,7 @@ public class DAO_FS extends DAO{
     @Override
     public void addReprod(Reproducible r){
         if(!libreria.containsKey(r.getId())){
+            System.out.println(r.getId()+" "+r.getNombre());
             libreria.put(r.getId(), r);
             this.saveLib();
         }
@@ -249,4 +250,6 @@ public class DAO_FS extends DAO{
         }
         return salida;
     }
+    
+    
 }

@@ -215,6 +215,7 @@ public class ventanaUsuario extends javax.swing.JFrame {
     }
     
     private void generarLayoutBuscador(){
+        buscadorPanel = new JPanel();
         textField = new JTextField();
         buscarLabel = new JLabel("Buscar:");
         
@@ -233,6 +234,7 @@ public class ventanaUsuario extends javax.swing.JFrame {
         editableGroup2.add(andRadioButton);
         editableGroup2.add(orRadioButton);
         botonBuscar = new JButton("Buscar");
+        botonrestartFiltro = new JButton("Restaurar");
         resultadoBusquedaList = new List();
         tituloRadioButton.setSelected(true);
         andRadioButton.setSelected(true);
@@ -247,13 +249,13 @@ public class ventanaUsuario extends javax.swing.JFrame {
             .addGroup(layout.createParallelGroup(LEADING)
                 .addComponent(textField)
                 .addGroup(layout.createSequentialGroup()
-                .addComponent(tituloRadioButton)
-                .addComponent(artistaRadioButton)
-                .addComponent(generoRadioButton)
-                .addComponent(compuestoCheckBox)
-                .addComponent(andRadioButton)
-                .addComponent(orRadioButton))
-                .addComponent(resultadoBusquedaList))
+                    .addComponent(tituloRadioButton)
+                    .addComponent(artistaRadioButton)
+                    .addComponent(generoRadioButton)
+                    .addComponent(compuestoCheckBox)
+                    .addComponent(andRadioButton)
+                    .addComponent(orRadioButton))
+                    .addComponent(resultadoBusquedaList))
             .addGroup(layout.createParallelGroup(LEADING)
                 .addComponent(botonBuscar)
                 .addComponent(botonrestartFiltro))
