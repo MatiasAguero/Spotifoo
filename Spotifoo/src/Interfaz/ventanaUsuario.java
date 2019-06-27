@@ -215,6 +215,7 @@ public class ventanaUsuario extends javax.swing.JFrame {
     }
     
     private void generarLayoutBuscador(){
+        buscadorPanel = new JPanel();
         textField = new JTextField();
         buscarLabel = new JLabel("Buscar:");
         
@@ -224,8 +225,8 @@ public class ventanaUsuario extends javax.swing.JFrame {
         compuestoCheckBox = new JCheckBox("Compuesto");
         andRadioButton = new JRadioButton("And");
         orRadioButton = new JRadioButton("Or");
-        ButtonGroup editableGroup = new ButtonGroup();
         
+        ButtonGroup editableGroup = new ButtonGroup();
         editableGroup.add(tituloRadioButton);
         editableGroup.add(artistaRadioButton);
         editableGroup.add(generoRadioButton);
@@ -233,6 +234,7 @@ public class ventanaUsuario extends javax.swing.JFrame {
         editableGroup2.add(andRadioButton);
         editableGroup2.add(orRadioButton);
         botonBuscar = new JButton("Buscar");
+        botonrestartFiltro= new JButton("Restablecer");
         resultadoBusquedaList = new List();
         tituloRadioButton.setSelected(true);
         andRadioButton.setSelected(true);
