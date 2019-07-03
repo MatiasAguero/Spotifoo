@@ -1,5 +1,6 @@
 package Spotifoo.DataManager;
 
+import Spotifoo.Artista;
 import Spotifoo.Filtro.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,12 +30,14 @@ public class DAO_FS extends DAO{
     public static final String PATH_APP_DATA = "."+FS+"resources";
     public static final String PATH_APP_BD_USERS = PATH_APP_DATA+"/bd/users";
     public static final String PATH_APP_BD_LIB = PATH_APP_DATA+"/bd/lib";
+    public static final String PATH_APP_BD_ARTISTAS = PATH_APP_DATA+"/bd/artists";
     
     protected static DAO_FS instanciaDaoFs;
     
     private DAO_FS() {
         this.cuentas = new HashMap();
         this.libreria = new HashMap();
+        this.artistas = new HashMap();
     }
 
     public static DAO_FS getBaseDatos(){
@@ -42,6 +45,7 @@ public class DAO_FS extends DAO{
             instanciaDaoFs = new DAO_FS();
             instanciaDaoFs.setCuentas();
             instanciaDaoFs.setLibreria();
+            instanciaDaoFs.setArtistas();
             return instanciaDaoFs;
         }
         return instanciaDaoFs;
@@ -92,8 +96,29 @@ public class DAO_FS extends DAO{
         }
     }
     
-        public static Reproducible loadFile(String path){
+    @Override
+    protected void setArtistas() {
 
+        ObjectInputStream ois;
+        FileInputStream fis;
+        File fLib = new File(PATH_APP_BD_ARTISTAS);
+
+        try {
+            
+            if(fLib.exists()){
+                //Carga el archivo de artistas
+                fis = new FileInputStream(PATH_APP_BD_ARTISTAS);
+                ois = new ObjectInputStream(fis);
+                this.artistas = (HashMap<Integer, Artista>) ois.readObject();     
+                ois.close();
+            }
+                       
+        } catch (IOException | ClassNotFoundException ex) {
+            Logger.getLogger(DAO_FS.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public static Reproducible loadFile(String path){
 
         ObjectInputStream ois;
         FileInputStream fis;
@@ -113,7 +138,7 @@ public class DAO_FS extends DAO{
         }
 
         return null;
-    }
+    }    
 
     //Guarda un arcivo de musica de manera local en la direccion pasada por parametro
     public static void saveLocal(String path, Reproducible r) {
@@ -184,6 +209,31 @@ public class DAO_FS extends DAO{
     
     }
     
+    private void saveArt(){
+        ObjectOutputStream oos;
+        FileOutputStream fos;
+
+        try {
+            Files.createDirectories(new File(PATH_APP_DATA+"/bd").toPath());
+            //Trunca el archivo original para escribir los datos nuevos
+            new PrintWriter(PATH_APP_BD_ARTISTAS).close();
+            
+            //Guardado del archivo de artistas
+            fos = new FileOutputStream(PATH_APP_BD_ARTISTAS);
+            oos = new ObjectOutputStream(fos);
+            oos.writeObject(this.artistas);
+            oos.close();
+            
+        } catch (FileNotFoundException ex) {
+                Logger.getLogger(DAO_FS.class.getName()).log(Level.SEVERE, null, ex);
+            
+        } catch (IOException ex) {
+            Logger.getLogger(DAO_FS.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    
+    }
+    
     //Realiza la accion de login, comprueba que el usuario exista y que las contraseñas sean las mismas
     private boolean connect(String userName, String contraseña){
         
@@ -221,23 +271,19 @@ public class DAO_FS extends DAO{
 
     @Override
     public void addReprod(Reproducible r){
-        if(!libreria.containsKey(r.getId())){
-            libreria.put(r.getId(), r);
-            this.saveLib();
-        }
+        
+        System.out.println(r.getId()+" "+r.getNombre());
+        libreria.put(r.getId(), r);
+        this.saveLib();
+
     }
 
     @Override
     public void delReprod(Reproducible r){
-        if(libreria.containsKey(r.getId())){
-            libreria.remove(r.getId());
-            this.saveLib();
-        }
-    }
-    
-    @Override
-    public Reproducible getReproducible(int id){
-        return libreria.get(id);
+        
+        libreria.remove(r.getId());
+        this.saveLib();
+
     }
     
     @Override
@@ -249,4 +295,19 @@ public class DAO_FS extends DAO{
         }
         return salida;
     }
+
+    @Override
+    public void addArtista(Artista a) {
+        artistas.put(a.getId(), a);
+        this.saveArt();
+    }
+
+    @Override
+    public void delArtista(Artista a) {
+        artistas.remove(a.getId());
+        this.saveArt();
+    }
+
+    
+    
 }

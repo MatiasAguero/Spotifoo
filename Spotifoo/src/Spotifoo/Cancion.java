@@ -1,5 +1,7 @@
 package Spotifoo;
 
+import Spotifoo.DataManager.DAO;
+import Spotifoo.DataManager.DAO_FS;
 import Spotifoo.Filtro.Filtro;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,24 +11,34 @@ import java.util.List;
  * @author nico
  */
 public class Cancion extends Reproducible{
-    Artista artista;
-    ConjuntoCanciones album;
+    int idArtista;
+    int album;
     String fecha;
     String genero;
     
     public Cancion(String nombre,Artista artista,ConjuntoCanciones album,String genero,String fecha){
         super(nombre);
         this.genero=genero;
-        this.artista=artista;
-        this.album=album;
+        this.idArtista=artista.getId();
+        this.album=album.getId();
         this.fecha=fecha;
         
     }
-        public Cancion(String nombre,Artista artista,String genero,String fecha){
+    
+    public Cancion(String nombre,Artista artista,String genero,String fecha){
         super(nombre);
         this.genero=genero;
-        this.artista=artista;
-        this.album=null;
+        this.idArtista=artista.getId();
+        this.album=Integer.MIN_VALUE;
+        this.fecha=fecha;
+        
+    }
+    
+    public Cancion(String nombre,String genero,String fecha){
+        super(nombre);
+        this.genero=genero;
+        this.idArtista=Integer.MIN_VALUE;
+        this.album=Integer.MIN_VALUE;
         this.fecha=fecha;
         
     }
@@ -46,12 +58,12 @@ public class Cancion extends Reproducible{
         return salida;
     }
 
-    public void setAlbum(ConjuntoCanciones album) {
+    public void setAlbum(int album) {
         this.album = album;
     }
 
     public void setArtista(Artista artista) {
-        this.artista = artista;
+        this.idArtista = artista.getId();
     }
 
     public void setFecha(String fecha) {
@@ -67,11 +79,19 @@ public class Cancion extends Reproducible{
     }
 
     public ConjuntoCanciones getAlbum() {
-        return album;
+        if(this.album == Integer.MIN_VALUE){
+            DAO bd = DAO_FS.getBaseDatos();
+            return (ConjuntoCanciones) bd.getReproducible(this.album);
+        }
+        else return null;
     }
 
     public Artista getArtista() {
-        return artista;
+        if(this.idArtista == Integer.MIN_VALUE){
+            DAO bd = DAO_FS.getBaseDatos();
+            return bd.getArtista(this.idArtista);
+        }
+        else return null;
     }
 
     public String getFecha() {
@@ -82,13 +102,15 @@ public class Cancion extends Reproducible{
         return genero;
     }
 
+    @Override
     public String getNombre() {
         return nombre;
     }
 
     @Override
     public boolean perteneceArtista(String a) {
-        return artista.getNombre().equals(a);
+        DAO bd = DAO_FS.getBaseDatos();
+        return bd.getArtista(this.idArtista).getNombre().equals(a);
     }
     @Override
     public boolean perteneceGenero(String genero){

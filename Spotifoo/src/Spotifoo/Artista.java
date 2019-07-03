@@ -1,6 +1,9 @@
 package Spotifoo;
 
+import Spotifoo.DataManager.DAO;
+import Spotifoo.DataManager.DAO_FS;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -9,15 +12,22 @@ import java.util.List;
  */
 public class Artista implements Serializable{
     String nombre;
+    int id;
     String genero;
-    List<ConjuntoCanciones> discografia;
+    List<Integer> discografia;
     int añoFormacion;
     
     public Artista(String nombre,String genero,List<ConjuntoCanciones> discografia,int añoFormacion){
         this.añoFormacion=añoFormacion;
         this.nombre=nombre;
         this.genero=genero;
-        this.discografia=discografia;
+        this.id = this.hashCode();
+        
+        List<Integer> l = new ArrayList<>();
+        for(ConjuntoCanciones c: discografia)
+            l.add(c.getId());
+        
+        this.discografia=l;
     }
 
     public void setAñoFormacion(int añoFormacion) {
@@ -25,7 +35,12 @@ public class Artista implements Serializable{
     }
 
     public void setDiscografia(List<ConjuntoCanciones> discografia) {
-        this.discografia = discografia;
+        
+        List<Integer> l = new ArrayList<>();
+        for(ConjuntoCanciones c: discografia)
+            l.add(c.getId());
+        
+        this.discografia=l;
     }
 
     public void setGenero(String genero) {
@@ -41,7 +56,18 @@ public class Artista implements Serializable{
     }
 
     public List<ConjuntoCanciones> getDiscografia() {
-        return discografia;
+        
+        DAO bd = DAO_FS.getBaseDatos();
+        
+        List<ConjuntoCanciones> l = new ArrayList<>();
+        for(Integer i: discografia)
+            l.add((ConjuntoCanciones) bd.getReproducible(i));
+        
+        return l;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getGenero() {
