@@ -1,6 +1,7 @@
 package Interfaz;
 
 import Interfaz.accionesSobreTabla.ventanaAgregarMusica;
+import Spotifoo.Admin;
 import Spotifoo.DataManager.DAO;
 import Spotifoo.DataManager.DAO_FS;
 import Spotifoo.Filtro.Filtro;
@@ -33,6 +34,7 @@ import javax.swing.table.TableModel;
 public class ventanaAdministrador extends javax.swing.JFrame {
 
     DAO bd;
+    Admin admin;
     
     private JPanel panelAdmMusica;
     private JPanel panelAdmUsuario;
@@ -46,10 +48,11 @@ public class ventanaAdministrador extends javax.swing.JFrame {
     private JRadioButton idRadioButton;
     private JRadioButton nombreRadioButton;
     private JTable table;
-    public ventanaAdministrador() {
+    public ventanaAdministrador(Admin a) {
         initComponents();
         configurarFrame();
         bd = DAO_FS.getBaseDatos();
+        admin = a;
         generarTabs();
         eventosComponentes();
     }

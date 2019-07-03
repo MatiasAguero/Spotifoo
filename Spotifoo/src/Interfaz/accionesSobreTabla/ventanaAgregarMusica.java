@@ -135,7 +135,7 @@ public class ventanaAgregarMusica extends javax.swing.JFrame {
             DefaultTableModel model = (DefaultTableModel) table.getModel();
             model.addRow(new Object[]{nombreTextField.getText(),listArtista.getSelectedItem(),
                          listGenero.getSelectedItem(),"2017"});
-                cancionesAñadidas.add(new Cancion(nombreTextField.getText(),null,null,
+                cancionesAñadidas.add(new Cancion(nombreTextField.getText(),
                          (String)listGenero.getSelectedItem(),"2017"));
         }
     });

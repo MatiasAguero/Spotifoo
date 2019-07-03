@@ -55,7 +55,6 @@ public class ventanaUsuario extends javax.swing.JFrame {
     private JPanel bibliotecaPanel;
     private JPanel playlistsPanel;
     private JTextField textField;
-    private JTextField textField2;
     private JLabel buscarLabel;
     private JRadioButton tituloRadioButton;
     private JRadioButton artistaRadioButton;
@@ -421,6 +420,7 @@ public class ventanaUsuario extends javax.swing.JFrame {
     } 
     
     private void filtrarCanciones(Filtro f){
+        
         for (Reproducible r : db.buscar(f)){
                 Cancion c = (Cancion) r;
                 resultadoBusquedaList.add(c.getNombre() +" | " + c.getArtista().getNombre() + " | "+ c.getGenero());
