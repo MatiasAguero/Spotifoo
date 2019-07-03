@@ -1,13 +1,19 @@
 package Interfaz.accionesSobreTabla;
 
+import Spotifoo.Admin;
+import Spotifoo.Artista;
 import Spotifoo.Cancion;
 import Spotifoo.ConjuntoCanciones;
+import Spotifoo.DataManager.DAO_FS;
+import Spotifoo.Reproducible;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.swing.*;
 import static javax.swing.GroupLayout.Alignment.BASELINE;
 import static javax.swing.GroupLayout.Alignment.LEADING;
@@ -31,30 +37,38 @@ public class ventanaAgregarMusica extends javax.swing.JFrame {
     private JTable table;
     private JComboBox listArtista;
     private JComboBox listGenero;
+    private JTextField añoTextField;
     
     List<Cancion> cancionesAñadidas;
     
     JTable tableVentanaMusica;
-    public ventanaAgregarMusica(JTable table) {
+    Admin admin;
+    public ventanaAgregarMusica(JTable table,Admin admin) {
         initComponents();
         configFrame();
         generarLayout();
         eventosComponentes();
         cancionesAñadidas = new ArrayList<>();
         tableVentanaMusica = table;
+        this.admin = admin;
     }
     
     private void generarLayout(){
         JLabel nombre = new JLabel("Nombre:");
         nombreTextField = new JTextField();
         JLabel artista = new JLabel("Artista");
-        listArtista = new JComboBox(new Object[]{"Ciro"}); 
+        listArtista = new JComboBox(); 
+        for (Map.Entry<Integer, Artista> entry : DAO_FS.getBaseDatos().getArtista().entrySet()) {
+            listArtista.addItem(entry.getValue().getNombre());
+        }
         JLabel genero = new JLabel("Genero");
         String[] generos={ "Blues","Corrido","Country","Cumbia","Disco","Electrónica","Flamenco",
                            "Folk", "Funk", "Gospel", "Heavy Metal", "Hip Hop","Indie",    "Jazz",
                            "Merengue","Pop", "Punk", "Ranchera","Rap", "Reggae","Reggaeton","Rumba",
                            "Rock", "Rock and Roll", "Salsa", "Samba", "Tango","Vallenato"};
         listGenero = new JComboBox(generos); 
+        JLabel añoLabel = new JLabel("Año:");
+        añoTextField = new JTextField();
         añadirCancionTabla = new JButton("+");
         restaurarTabla = new JButton("Restablecer");
         agregar = new JButton("Agregar");
@@ -69,7 +83,7 @@ public class ventanaAgregarMusica extends javax.swing.JFrame {
         albumTextField = new JTextField();
         
         //Creacion de tabla
-        String[] columnNames={"Nombre", "Artista","Genero","Fecha"};
+        String[] columnNames={"Nombre", "Artista","Genero","Año"};
         Object[][] data = {};
         table = new JTable(data,columnNames);
         TableModel model = new DefaultTableModel(data,columnNames){
@@ -95,6 +109,8 @@ public class ventanaAgregarMusica extends javax.swing.JFrame {
                         .addComponent(listArtista)
                         .addComponent(genero)
                         .addComponent(listGenero)
+                        .addComponent(añoLabel)
+                        .addComponent(añoTextField)
                         .addComponent(añadirCancionTabla)
                         .addComponent(restaurarTabla))
                     .addComponent(scrollPane)
@@ -112,6 +128,8 @@ public class ventanaAgregarMusica extends javax.swing.JFrame {
                 .addComponent(listArtista)
                 .addComponent(genero)
                 .addComponent(listGenero)
+                .addComponent(añoLabel)
+                .addComponent(añoTextField)
                 .addComponent(añadirCancionTabla)
                 .addComponent(restaurarTabla))
             .addGroup(layout.createParallelGroup(LEADING)
@@ -137,6 +155,8 @@ public class ventanaAgregarMusica extends javax.swing.JFrame {
                          listGenero.getSelectedItem(),"2017"});
                 cancionesAñadidas.add(new Cancion(nombreTextField.getText(),
                          (String)listGenero.getSelectedItem(),"2017"));
+           // admin.addReprod(new Cancion(nombreTextField.getText(),listArtista.getSelectedItem(),
+                         //   listGenero.getSelectedItem(),"2017"));
         }
     });
     restaurarTabla.addActionListener(new java.awt.event.ActionListener() {
@@ -148,7 +168,7 @@ public class ventanaAgregarMusica extends javax.swing.JFrame {
         private void restaurarTablaActionPerformed(ActionEvent evt) {
             DefaultTableModel model = (DefaultTableModel) table.getModel();
             for (int i = table.getRowCount() -1; i >= 0; i--){
-            model.removeRow(i);
+                model.removeRow(i);
             }
             cancionesAñadidas.clear();
         }
@@ -188,7 +208,7 @@ public class ventanaAgregarMusica extends javax.swing.JFrame {
         
     private void configFrame(){
         this.setTitle("Spotifoo");
-        setSize(800, 300);
+        setSize(1100, 300);
         setLocationRelativeTo(null);
         getContentPane().setLayout(new BoxLayout(getContentPane(),BoxLayout.Y_AXIS));
         setVisible(true);

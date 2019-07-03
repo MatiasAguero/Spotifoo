@@ -193,7 +193,7 @@ public class ventanaAdministrador extends javax.swing.JFrame {
             }
 
             private void agregarButtonActionPerformed(ActionEvent evt) {
-                new ventanaAgregarMusica(table);
+                new ventanaAgregarMusica(table,admin);
             }
         });
         borrarButton.addActionListener(new java.awt.event.ActionListener() {
