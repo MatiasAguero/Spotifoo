@@ -23,6 +23,7 @@ public class Cancion extends Reproducible{
         this.album=album.getId();
         this.fecha=fecha;
         
+        updateDB();
     }
     
     public Cancion(String nombre,Artista artista,String genero,String fecha){
@@ -31,7 +32,7 @@ public class Cancion extends Reproducible{
         this.idArtista=artista.getId();
         this.album=Integer.MIN_VALUE;
         this.fecha=fecha;
-        
+        updateDB();
     }
     
     public Cancion(String nombre,String genero,String fecha){
@@ -40,7 +41,12 @@ public class Cancion extends Reproducible{
         this.idArtista=Integer.MIN_VALUE;
         this.album=Integer.MIN_VALUE;
         this.fecha=fecha;
-        
+        updateDB();
+    }
+    
+    private void updateDB(){
+        DAO bd = DAO_FS.getBaseDatos();
+        bd.addReprod(this);
     }
     
     @Override
@@ -60,22 +66,27 @@ public class Cancion extends Reproducible{
 
     public void setAlbum(int album) {
         this.album = album;
+        updateDB();
     }
 
     public void setArtista(Artista artista) {
         this.idArtista = artista.getId();
+        updateDB();
     }
 
     public void setFecha(String fecha) {
         this.fecha = fecha;
+        updateDB();
     }
 
     public void setGenero(String genero) {
         this.genero = genero;
+        updateDB();
     }
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+        updateDB();
     }
 
     public ConjuntoCanciones getAlbum() {
