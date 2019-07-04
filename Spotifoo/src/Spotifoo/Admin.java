@@ -25,6 +25,10 @@ public class Admin extends Cuenta{
     public void delReprod(Reproducible r){
         DAO_FS.getBaseDatos().delReprod(r);
     }
+    
+    public void delReprodId(int id){
+        DAO_FS.getBaseDatos().delReprodId(id);
+    }
 
     @Override
     public JFrame getFrame() {
