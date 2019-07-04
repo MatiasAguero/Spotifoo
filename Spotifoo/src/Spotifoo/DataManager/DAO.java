@@ -3,6 +3,7 @@ import Spotifoo.*;
 import Spotifoo.Filtro.*;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 /**
  *
  * @author matias
@@ -51,5 +52,18 @@ public abstract class DAO {
     
     public HashMap<Integer, Artista> getArtista(){
         return artistas;
+    }
+    
+    public Artista getArtistaNombre(String nombre){
+        for (Map.Entry<Integer, Artista> entry : DAO_FS.getBaseDatos().getArtista().entrySet()) {
+                if (entry.getValue().getNombre().equals(nombre))
+                    return entry.getValue();
+            }
+        return null;
+    }
+    
+    public void delReprodId(Integer id){
+        if (libreria.containsKey(id))
+            libreria.remove(id);
     }
 }

@@ -1,13 +1,16 @@
 package Interfaz;
 
 import Interfaz.accionesSobreTabla.ventanaAgregarMusica;
+import Interfaz.accionesSobreTabla.ventanaEditarMusica;
 import Spotifoo.Admin;
+import Spotifoo.Cuenta;
 import Spotifoo.DataManager.DAO;
 import Spotifoo.DataManager.DAO_FS;
 import Spotifoo.Filtro.Filtro;
 import Spotifoo.Reproducible;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Map;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
@@ -16,6 +19,7 @@ import static javax.swing.GroupLayout.Alignment.BASELINE;
 import static javax.swing.GroupLayout.Alignment.LEADING;
 import static javax.swing.GroupLayout.Alignment.TRAILING;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -33,6 +37,9 @@ import javax.swing.table.TableModel;
  */
 public class ventanaAdministrador extends javax.swing.JFrame {
 
+    private static final String OPCION_USR = "Usuarios";
+    private static final String OPCION_REP = "Reproducibles";
+    
     DAO bd;
     Admin admin;
     
@@ -48,6 +55,8 @@ public class ventanaAdministrador extends javax.swing.JFrame {
     private JRadioButton idRadioButton;
     private JRadioButton nombreRadioButton;
     private JTable table;
+    private JComboBox opcion; 
+    private JScrollPane scrollPane;
     public ventanaAdministrador(Admin a) {
         initComponents();
         configurarFrame();
@@ -68,13 +77,14 @@ public class ventanaAdministrador extends javax.swing.JFrame {
     
     private void generarTabs(){
         //Genera el componente de las pestañas
-        JTabbedPane tabs = new JTabbedPane();
+        //JTabbedPane tabs = new JTabbedPane();
         //Lo añade en primer lugar en el frame
-        this.add(tabs, 0);
+        //this.add(tabs, 0);
         generarPanelAdmMusica();
-        tabs.add("Administrar Musica",panelAdmMusica);
-        generarPanelAdmUsuario();
-        tabs.add("Adminsitrar Usuarios",panelAdmUsuario);
+        this.add(panelAdmMusica);
+       //tabs.add("Administrar Musica",panelAdmMusica);
+        //generarPanelAdmUsuario();
+        //tabs.add("Adminsitrar Usuarios",panelAdmUsuario);
     }
     
     private void generarPanelAdmMusica(){
@@ -90,6 +100,7 @@ public class ventanaAdministrador extends javax.swing.JFrame {
         ButtonGroup editableGroup = new ButtonGroup();
         editableGroup.add(idRadioButton);
         editableGroup.add(nombreRadioButton);
+        idRadioButton.setSelected(true);
         
         //Creacion de tabla
         String[] columnNames={"ID", "Nombre"};
@@ -102,8 +113,12 @@ public class ventanaAdministrador extends javax.swing.JFrame {
         };
         table.setModel(model);
         table.setPreferredScrollableViewportSize(new Dimension(200, 70));
-        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane = new JScrollPane(table);
         
+        
+        opcion = new JComboBox();
+        opcion.addItem(OPCION_REP);
+        opcion.addItem(OPCION_USR);
         //Agregar musica
         agregarButton = new JButton("Agregar...");
         
@@ -129,6 +144,7 @@ public class ventanaAdministrador extends javax.swing.JFrame {
                         .addComponent(restaurarButton))
                     .addComponent(scrollPane)
                     .addGroup(layout.createSequentialGroup()
+                        .addComponent(opcion)
                         .addComponent(agregarButton)
                         .addComponent(borrarButton)
                         .addComponent(editarButton)))
@@ -144,7 +160,8 @@ public class ventanaAdministrador extends javax.swing.JFrame {
                 .addComponent(restaurarButton))
             .addGroup(layout.createParallelGroup(LEADING)
                 .addComponent(scrollPane))
-            .addGroup(layout.createParallelGroup()
+            .addGroup(layout.createParallelGroup(BASELINE)
+                .addComponent(opcion)
                 .addComponent(agregarButton)
                 .addComponent(borrarButton)
                 .addComponent(editarButton))
@@ -204,11 +221,45 @@ public class ventanaAdministrador extends javax.swing.JFrame {
 
             private void borrarButtonActionPerformed(ActionEvent evt) {
                 DefaultTableModel model = (DefaultTableModel) table.getModel();
+                if(opcion.equals(OPCION_REP))
+                    admin.delReprodId((Integer)model.getValueAt(table.getSelectedRow(), 0));
                 model.removeRow(table.getSelectedRow());
-                //Eliminar de la base de datos
             }
         });
-        
+        editarButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editarButtonActionPerformed(evt);
+            }
+
+            private void editarButtonActionPerformed(ActionEvent evt) {
+                if (table.getSelectedRow()!=-1){
+                    new ventanaEditarMusica(table,admin);
+                } 
+                else{
+                    //Mensaje de falta de seleccion de reproducible
+                }
+            }
+        });
+        opcion.addActionListener (new ActionListener () {
+        public void actionPerformed(ActionEvent e) {
+            DefaultTableModel model = (DefaultTableModel) table.getModel();
+            while (table.getRowCount()!=0)
+                model.removeRow(table.getRowCount()-1);
+
+            if (opcion.getSelectedItem().equals(OPCION_REP)){
+                bd = DAO_FS.getBaseDatos();
+                for (Map.Entry<Integer, Reproducible> entry : bd.getLibreria().entrySet()) {
+                    model.addRow(new Object[]{entry.getValue().getId(),entry.getValue().getNombre()});
+                }
+            }
+            else{
+                bd = DAO_FS.getBaseDatos();
+                for (Map.Entry<String, Cuenta> entry : bd.getCuentas().entrySet()) 
+                    model.addRow(new Object[]{entry.getKey(),entry.getValue().getContraseña()});
+            }
+        }  
+        });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -152,11 +152,10 @@ public class ventanaAgregarMusica extends javax.swing.JFrame {
         private void añadirCancionTablaActionPerformed(ActionEvent evt) {
             DefaultTableModel model = (DefaultTableModel) table.getModel();
             model.addRow(new Object[]{nombreTextField.getText(),listArtista.getSelectedItem(),
-                         listGenero.getSelectedItem(),"2017"});
-                cancionesAñadidas.add(new Cancion(nombreTextField.getText(),
-                         (String)listGenero.getSelectedItem(),"2017"));
-           // admin.addReprod(new Cancion(nombreTextField.getText(),listArtista.getSelectedItem(),
-                         //   listGenero.getSelectedItem(),"2017"));
+                         listGenero.getSelectedItem(),añoTextField.getSelectedText()});
+            cancionesAñadidas.add(new Cancion(nombreTextField.getText(),  DAO_FS.getBaseDatos().
+                                    getArtistaNombre((String)listArtista.getSelectedItem()),
+                                    (String)listGenero.getSelectedItem(),añoTextField.getSelectedText()));
         }
     });
     restaurarTabla.addActionListener(new java.awt.event.ActionListener() {
@@ -184,7 +183,8 @@ public class ventanaAgregarMusica extends javax.swing.JFrame {
             if (canciones.isSelected()){
                 //Agregar a la base de datos
                 for(Cancion c: cancionesAñadidas){
-                    model.addRow(new Object[]{"1234",c.getNombre()});
+                    model.addRow(new Object[]{c.getId(),c.getNombre()});
+                    admin.addReprod(c);
                 }
             } else{
                 String nombreAlbum = albumTextField.getText();
@@ -193,8 +193,9 @@ public class ventanaAgregarMusica extends javax.swing.JFrame {
                     for(Cancion c: cancionesAñadidas){
                         album.agregar(c);
                     }
-                    //Agregar a la base de datos
-                    model.addRow(new Object[]{"1234",nombreAlbum});
+                    album.setAlbum();
+                    admin.addReprod(album);
+                    model.addRow(new Object[]{album.getId(),nombreAlbum});
                     }
             }
         }
