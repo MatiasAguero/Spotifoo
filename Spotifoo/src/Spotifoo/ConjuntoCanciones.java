@@ -21,6 +21,7 @@ public class ConjuntoCanciones extends Reproducible{
         DAO bd = DAO_FS.getBaseDatos();
         bd.addReprod(this);
     }
+    
     public ConjuntoCanciones(String nombre,List<ConjuntoCanciones> canciones){
         super(nombre);
         
@@ -82,20 +83,29 @@ public class ConjuntoCanciones extends Reproducible{
     public boolean perteneceArtista(String a) {
         DAO bd = DAO_FS.getBaseDatos();
         
-        for (Integer r:canciones){
-            if (bd.getReproducible(r).perteneceArtista(a) == false)
-                return false;
+        if(!canciones.isEmpty()){
+            for (Integer r:canciones){
+                if (bd.getReproducible(r).perteneceArtista(a) == false)
+                    return false;
+            }
+            return true;
         }
-        return true;
+        else
+            return false;
     }
+    
     @Override
     public boolean perteneceGenero(String genero){
         DAO bd = DAO_FS.getBaseDatos();
         
-        for (Integer r:canciones){
-            if (bd.getReproducible(r).perteneceGenero(genero) == false)
-                return false;
+        if(!canciones.isEmpty()){
+            for (Integer r:canciones){
+                if (bd.getReproducible(r).perteneceGenero(genero) == false)
+                    return false;
+            }
+            return true;
         }
-        return true;
+        else
+            return false;
     }
 }

@@ -21,8 +21,10 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.ScrollPane;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.util.Map;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -34,7 +36,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JCheckBox;
+import javax.swing.JFileChooser;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -307,6 +311,8 @@ public class ventanaUsuario extends javax.swing.JFrame {
     
     private void generarLayoutBiblioteca(){
         
+        ButtonActionListener al = new ButtonActionListener();
+        
         bibliotecaPanel = new JPanel();
         bibliotecaPanel.setLayout(new GridBagLayout());
         listaPlaylist = new JList(usuario.getPlaylist().entrySet().toArray());
@@ -327,12 +333,18 @@ public class ventanaUsuario extends javax.swing.JFrame {
         playlistOptionPanel.setLayout(new BoxLayout(playlistOptionPanel, BoxLayout.LINE_AXIS));
         
         botonAdd = new JButton("+");
+        botonAdd.addActionListener(al);
+        botonAdd.setActionCommand("ADD");
         playlistOptionPanel.add(botonAdd);
         playlistOptionPanel.add(Box.createRigidArea(new Dimension(5,0)));
         botonEdit = new JButton("E");
+        botonEdit.addActionListener(al);
+        botonEdit.setActionCommand("EDIT");
         playlistOptionPanel.add(botonEdit);
         playlistOptionPanel.add(Box.createRigidArea(new Dimension(5,0)));
         botonDel = new JButton("X");
+        botonDel.addActionListener(al);
+        botonDel.setActionCommand("DEL");
         playlistOptionPanel.add(botonDel);
         
         c = new GridBagConstraints();
@@ -357,9 +369,13 @@ public class ventanaUsuario extends javax.swing.JFrame {
         SongsOptionPanel.setLayout(new BoxLayout(SongsOptionPanel, BoxLayout.LINE_AXIS));
         
         botonAdd2 = new JButton("Añadir");
+        botonAdd2.addActionListener(al);
+        botonAdd2.setActionCommand("ADD2");
         SongsOptionPanel.add(botonAdd2);
         SongsOptionPanel.add(Box.createRigidArea(new Dimension(5,0)));
         botonDownload = new JButton("Descargar");
+        botonDownload.addActionListener(al);
+        botonDownload.setActionCommand("DESCARGAR");
         SongsOptionPanel.add(botonDownload);
         
         c = new GridBagConstraints();
@@ -421,12 +437,69 @@ public class ventanaUsuario extends javax.swing.JFrame {
         filtroAnt = filtro;
     } 
     
+    private class ButtonActionListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent event){
+            String action = event.getActionCommand();
+            final JFileChooser fc = new JFileChooser();
+            String input;
+            switch(action){
+                case "ADD":
+                    //Añade una nueva playlist
+                    input = JOptionPane.showInputDialog("Inserte nombre de playlist");
+                    usuario.createPlaylist(input);
+                    break;
+                case "ADD2":
+                    //Añade una nueva cancion
+                    int returnVal = fc.showOpenDialog(bibliotecaPanel);
+                    if (returnVal == JFileChooser.APPROVE_OPTION) {
+                        File file = fc.getSelectedFile();
+                        usuario.addElem(((DAO_FS) db).loadFile(file));
+                    }
+                    break;
+                case "DEL":
+                    //Elimina una playlist
+                    ConjuntoCanciones playlist = (ConjuntoCanciones)listaPlaylist.getSelectedValue();
+                    if(playlist != null)
+                        usuario.delPlaylist(playlist);
+                    else
+                        JOptionPane.showMessageDialog (null, "No se ha seleccionado ninguna playlist", "Atencion!", JOptionPane.WARNING_MESSAGE);
+                    break;
+                case "EDIT":
+                    //Edita una playlist
+                    break;
+                case "DESCARGAR":
+                    //Guarda una cancion en el sistema de archivos local
+                    int userSelection = fc.showSaveDialog(bibliotecaPanel);
+ 
+                    if (userSelection == JFileChooser.APPROVE_OPTION) {
+                        File f = fc.getSelectedFile();
+                        Cancion c = (Cancion)((JList) listaCanciones).getSelectedValue();
+                        if(c != null)
+                            DAO_FS.saveLocal(f, c);
+                        else
+                            JOptionPane.showMessageDialog (null, "No se ha seleccionado ninguna cancion", "Atencion!", JOptionPane.WARNING_MESSAGE);
+                    }
+                    break;
+            }
+        }
+    }
+
     private void filtrarCanciones(Filtro f){
         
         for (Reproducible r : db.buscar(f)){
+            
+            if(r.getCanciones().size() == 1){
                 Cancion c = (Cancion) r;
+                System.out.println(c.getNombre());
                 resultadoBusquedaList.add(c.getNombre() +" | " + c.getArtista().getNombre() + " | "+ c.getGenero());
             }
+            else {
+                ConjuntoCanciones p = (ConjuntoCanciones) r;
+                resultadoBusquedaList.add(p.getNombre());
+            }
+        }
     }
 
     private void configurarFrame(){

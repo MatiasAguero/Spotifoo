@@ -41,7 +41,6 @@ public class Cancion extends Reproducible{
         this.idArtista=Integer.MIN_VALUE;
         this.album=Integer.MIN_VALUE;
         this.fecha=fecha;
-        updateDB();
     }
     
     private void updateDB(){
@@ -98,7 +97,7 @@ public class Cancion extends Reproducible{
     }
 
     public Artista getArtista() {
-        if(this.idArtista == Integer.MIN_VALUE){
+        if(this.idArtista != Integer.MIN_VALUE){
             DAO bd = DAO_FS.getBaseDatos();
             return bd.getArtista(this.idArtista);
         }

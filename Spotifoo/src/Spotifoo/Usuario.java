@@ -39,6 +39,11 @@ public class Usuario extends Cuenta{
         updateDB();
     }
     
+    public void delPlaylist(ConjuntoCanciones p){
+        playlist.remove(p.getNombre());
+        updateDB();
+    }
+    
     public void createPlaylist(String nombrePlaylist){
         playlist.put(nombrePlaylist, new ConjuntoCanciones(nombrePlaylist));
         updateDB();
@@ -52,22 +57,9 @@ public class Usuario extends Cuenta{
         updateDB();
     }
 
-    public void loadLocal(String path){
-        this.addElem(DAO_FS.getBaseDatos().loadFile(path));
-    }
-
-    public void saveServer(String path){
-        //TODO....
-    }
-
-    public void descargarRepr(Reproducible r){
-        //TODO....
-    }
-
     public HashMap<String, ConjuntoCanciones> getPlaylist() {
         return playlist;
     }  
-    
 
     @Override
     public JFrame getFrame() {
