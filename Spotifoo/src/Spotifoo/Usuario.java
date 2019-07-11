@@ -1,6 +1,7 @@
 package Spotifoo;
 
 import Interfaz.ventanaUsuario;
+import Spotifoo.DataManager.DAO;
 import Spotifoo.DataManager.DAO_FS;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,6 +22,12 @@ public class Usuario extends Cuenta{
         super(nombreUsuario, contraseña);
         bibliotecaPersonal = new ArrayList();
         playlist = new HashMap();
+        updateDB();
+    }
+    
+    private void updateDB(){
+        DAO bd = DAO_FS.getBaseDatos();
+        bd.addCuenta(this);
     }
     
     public List<Reproducible> getBiblioteca(){
@@ -29,10 +36,17 @@ public class Usuario extends Cuenta{
 
     public void addElem(Reproducible r){
         this.bibliotecaPersonal.add(r);
+        updateDB();
+    }
+    
+    public void delPlaylist(ConjuntoCanciones p){
+        playlist.remove(p.getNombre());
+        updateDB();
     }
     
     public void createPlaylist(String nombrePlaylist){
         playlist.put(nombrePlaylist, new ConjuntoCanciones(nombrePlaylist));
+        updateDB();
     }
     
     public void addListaReproducible(Reproducible r,String nombrePlayList){
@@ -40,24 +54,12 @@ public class Usuario extends Cuenta{
             if (entry.getKey().equals(nombrePlayList))
                     entry.getValue().agregar(r);
         }
-    }
-
-    public void loadLocal(String path){
-        this.addElem(DAO_FS.getBaseDatos().loadFile(path));
-    }
-
-    public void saveServer(String path){
-        //TODO....
-    }
-
-    public void descargarRepr(Reproducible r){
-        //TODO....
+        updateDB();
     }
 
     public HashMap<String, ConjuntoCanciones> getPlaylist() {
         return playlist;
     }  
-    
 
     @Override
     public JFrame getFrame() {

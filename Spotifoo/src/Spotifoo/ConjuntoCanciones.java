@@ -16,9 +16,12 @@ public class ConjuntoCanciones extends Reproducible{
     List<Integer> canciones;
     
     public ConjuntoCanciones (String nombre){
-            super(nombre);
-            canciones = new ArrayList<>();
+        super(nombre);
+        canciones = new ArrayList<>();
+        DAO bd = DAO_FS.getBaseDatos();
+        bd.addReprod(this);
     }
+    
     public ConjuntoCanciones(String nombre,List<ConjuntoCanciones> canciones){
         super(nombre);
         
@@ -26,10 +29,15 @@ public class ConjuntoCanciones extends Reproducible{
         for(ConjuntoCanciones c: canciones)
             l.add(c.getId());
         this.canciones=l;
+        
+        DAO bd = DAO_FS.getBaseDatos();
+        bd.addReprod(this);
     }
     
     public void agregar(Reproducible r){
         canciones.add(r.getId());
+        DAO bd = DAO_FS.getBaseDatos();
+        bd.addReprod(this);
     }
     
     //Actualiza todas las canciones añadidas a este objeto y les asigna su id
@@ -75,20 +83,29 @@ public class ConjuntoCanciones extends Reproducible{
     public boolean perteneceArtista(String a) {
         DAO bd = DAO_FS.getBaseDatos();
         
-        for (Integer r:canciones){
-            if (bd.getReproducible(r).perteneceArtista(a) == false)
-                return false;
+        if(!canciones.isEmpty()){
+            for (Integer r:canciones){
+                if (bd.getReproducible(r).perteneceArtista(a) == false)
+                    return false;
+            }
+            return true;
         }
-        return true;
+        else
+            return false;
     }
+    
     @Override
     public boolean perteneceGenero(String genero){
         DAO bd = DAO_FS.getBaseDatos();
         
-        for (Integer r:canciones){
-            if (bd.getReproducible(r).perteneceGenero(genero) == false)
-                return false;
+        if(!canciones.isEmpty()){
+            for (Integer r:canciones){
+                if (bd.getReproducible(r).perteneceGenero(genero) == false)
+                    return false;
+            }
+            return true;
         }
-        return true;
+        else
+            return false;
     }
 }

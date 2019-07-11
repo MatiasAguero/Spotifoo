@@ -1,6 +1,7 @@
 package Spotifoo.DataManager;
 
 import Spotifoo.Artista;
+import Spotifoo.Cancion;
 import Spotifoo.Filtro.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import Spotifoo.Cuenta;
 import Spotifoo.Reproducible;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -17,8 +20,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.nio.file.Files;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -118,20 +124,68 @@ public class DAO_FS extends DAO{
         }
     }
     
-    public static Reproducible loadFile(String path){
+    //Carga una cancion que esta en el sistema de archivos local y se lo 
+    //construye al usuario para que lo pueda añadir a su biblioteca personal
+    public Reproducible loadFile(File f){
 
-        ObjectInputStream ois;
-        FileInputStream fis;
-        Reproducible r;
-
+        BufferedReader br;
+        Cancion c;
+        String linea;
+        String nombre = "";
+        String fecha = "";
+        String genero = "";
+        String artista = "";
+        String album = "";
+        int cont = 0;
+        
+        /*Formato:
+            Nombre
+            idArtista
+            idAlbum
+            fecha
+            genero
+        */
+        
         try {
-            fis = new FileInputStream(path);
-            ois = new ObjectInputStream(fis);
-            r = (Reproducible) ois.readObject();
-            ois.close();
-            return r;
-        } catch (ClassNotFoundException | FileNotFoundException ex) {
-            Logger.getLogger(DAO_FS.class.getName()).log(Level.SEVERE, null, ex);
+            //Carga linea por linea cada atributo
+            br = new BufferedReader(new FileReader(f));
+            while((linea = br.readLine()) != null){
+                switch(cont) {
+                    case 0: nombre = linea;
+                            break;
+                    case 1: artista = linea;
+                            break;
+                    case 2: album = linea;
+                            break;
+                    case 3: fecha = linea;
+                            break;
+                    case 4: genero = linea;
+                            break;
+                }
+                cont++;
+            }
+            br.close();
+            //Genera la cancion
+            c = new Cancion(nombre, genero, fecha);
+            
+            //En caso de que el nombre del artista coincida con uno ya creado
+            //asigna el valor de id de dicho artista a la cancion
+            for (Map.Entry<Integer, Artista> entry : artistas.entrySet()) {
+                if(entry.getValue().getNombre().equals(artista))
+                    c.setArtista(entry.getValue());
+            }      
+            
+            //En caso de que el nombre del album coincida con uno ya creado
+            //asigna el valor de id de dicho album a la cancion
+            for (Map.Entry<Integer, Reproducible> entry : libreria.entrySet()) {
+                if(entry.getValue().getNombre().equals(album))
+                    c.setAlbum(entry.getValue().getId());
+            }
+            
+            return c;
+            
+        } catch (FileNotFoundException ex) {
+            JOptionPane.showMessageDialog (null, "Archivo no encontrado", "Error", JOptionPane.ERROR_MESSAGE);
             
         } catch (IOException ex) {
             Logger.getLogger(DAO_FS.class.getName()).log(Level.SEVERE, null, ex);
@@ -141,19 +195,29 @@ public class DAO_FS extends DAO{
     }    
 
     //Guarda un arcivo de musica de manera local en la direccion pasada por parametro
-    public static void saveLocal(String path, Reproducible r) {
+    public static void saveLocal(File f, Reproducible r) {
 
-        ObjectOutputStream oos;
-        FileOutputStream fos;
+        BufferedWriter bw;
+        
+        /*Formato:
+            Nombre
+            idArtista
+            idAlbum
+            fecha
+            genero
+        */
         
         try {
-            fos = new FileOutputStream(path);
-            oos = new ObjectOutputStream(fos);
-            oos.writeObject(r);            
-            oos.close();
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(DAO_FS.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
+            bw = new BufferedWriter(new FileWriter(f));
+            
+            bw.write(((Cancion) r).getNombre());
+            bw.write(((Cancion) r).getArtista().getId());
+            bw.write(((Cancion) r).getAlbum().getId());
+            bw.write(((Cancion) r).getFecha());
+            bw.write(((Cancion) r).getGenero());
+            bw.close();
+            
+        }  catch (IOException ex) {
             Logger.getLogger(DAO_FS.class.getName()).log(Level.SEVERE, null, ex);
         }
     
@@ -308,6 +372,4 @@ public class DAO_FS extends DAO{
         this.saveArt();
     }
 
-    
-    
 }

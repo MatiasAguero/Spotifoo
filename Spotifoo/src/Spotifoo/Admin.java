@@ -16,6 +16,7 @@ public class Admin extends Cuenta{
 
     public void addReprod(Reproducible r){
         DAO_FS.getBaseDatos().addReprod(r);
+        
     }
 
     public void delUsuario(Usuario u){
