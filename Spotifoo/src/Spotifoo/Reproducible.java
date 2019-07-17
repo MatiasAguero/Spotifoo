@@ -18,7 +18,8 @@ public abstract class Reproducible implements Serializable{
     }
     
     public abstract List<Reproducible> filtrarCanciones(Filtro f);
-    public abstract List<Reproducible> getCanciones();
+    public abstract List<Cancion> getCanciones();
+    public abstract int getCantCanciones();
     public int getId(){
         return this.id;
     }
@@ -30,7 +31,5 @@ public abstract class Reproducible implements Serializable{
     public abstract boolean perteneceArtista(String artista);
     public abstract boolean perteneceGenero(String genero);
     
-    public void play(){
-        //*****TO-DO*******
-    }
+    public abstract String play();
 }

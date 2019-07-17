@@ -21,6 +21,7 @@ import static javax.swing.GroupLayout.Alignment.TRAILING;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -39,12 +40,14 @@ public class ventanaAdministrador extends javax.swing.JFrame {
 
     private static final String OPCION_USR = "Usuarios";
     private static final String OPCION_REP = "Reproducibles";
+    private static final String OPCION_ART = "Artistas";
     
-    DAO bd;
+    DAO bd = DAO_FS.getBaseDatos();
     Admin admin;
     
     private JPanel panelAdmMusica;
     private JPanel panelAdmUsuario;
+    private JPanel panelAdmArtistas;
     
     private JTextField textField;
     private JButton agregarButton;
@@ -107,10 +110,12 @@ public class ventanaAdministrador extends javax.swing.JFrame {
         Object[][] data = getData(null);
         table = new JTable(data,columnNames);
         TableModel model = new DefaultTableModel(data,columnNames){
+            @Override
             public boolean isCellEditable(int row,int column){
                 return false;
             }
         };
+        
         table.setModel(model);
         table.setPreferredScrollableViewportSize(new Dimension(200, 70));
         scrollPane = new JScrollPane(table);
@@ -169,7 +174,7 @@ public class ventanaAdministrador extends javax.swing.JFrame {
     }
     
     private Object[][] getData(Filtro f){
-        bd = DAO_FS.getBaseDatos();
+
         int cant = bd.getLibreria().size();
         Object[][] data = new Object[cant][2];
         if (f == null){
@@ -183,9 +188,9 @@ public class ventanaAdministrador extends javax.swing.JFrame {
         return data;
     }
     
-    private void generarPanelAdmUsuario(){
-        panelAdmUsuario = new JPanel();
-    }
+//    private void generarPanelAdmUsuario(){
+//        panelAdmUsuario = new JPanel();
+//    }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -203,6 +208,7 @@ public class ventanaAdministrador extends javax.swing.JFrame {
         );
     }// </editor-fold>//GEN-END:initComponents
     private void eventosComponentes(){
+        
         agregarButton.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -213,6 +219,7 @@ public class ventanaAdministrador extends javax.swing.JFrame {
                 new ventanaAgregarMusica(table,admin);
             }
         });
+        
         borrarButton.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -220,12 +227,18 @@ public class ventanaAdministrador extends javax.swing.JFrame {
             }
 
             private void borrarButtonActionPerformed(ActionEvent evt) {
+                
                 DefaultTableModel model = (DefaultTableModel) table.getModel();
-                if(opcion.equals(OPCION_REP))
+                
+                if(opcion.getSelectedItem().equals(OPCION_REP))
                     admin.delReprodId((Integer)model.getValueAt(table.getSelectedRow(), 0));
+                else
+                    admin.delUsrId((String)model.getValueAt(table.getSelectedRow(), 0));
+                
                 model.removeRow(table.getSelectedRow());
             }
         });
+        
         editarButton.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -237,24 +250,28 @@ public class ventanaAdministrador extends javax.swing.JFrame {
                     new ventanaEditarMusica(table,admin);
                 } 
                 else{
-                    //Mensaje de falta de seleccion de reproducible
+                    JOptionPane.showMessageDialog (null, "No se ha seleccionado ningun elemento", "Atencion!", JOptionPane.WARNING_MESSAGE);
                 }
             }
         });
+        
         opcion.addActionListener (new ActionListener () {
+        @Override
         public void actionPerformed(ActionEvent e) {
             DefaultTableModel model = (DefaultTableModel) table.getModel();
             while (table.getRowCount()!=0)
                 model.removeRow(table.getRowCount()-1);
 
             if (opcion.getSelectedItem().equals(OPCION_REP)){
-                bd = DAO_FS.getBaseDatos();
+                agregarButton.setEnabled(true);
+                editarButton.setEnabled(true);
                 for (Map.Entry<Integer, Reproducible> entry : bd.getLibreria().entrySet()) {
                     model.addRow(new Object[]{entry.getValue().getId(),entry.getValue().getNombre()});
                 }
             }
             else{
-                bd = DAO_FS.getBaseDatos();
+                agregarButton.setEnabled(false);
+                editarButton.setEnabled(false);
                 for (Map.Entry<String, Cuenta> entry : bd.getCuentas().entrySet()) 
                     model.addRow(new Object[]{entry.getKey(),entry.getValue().getContraseña()});
             }

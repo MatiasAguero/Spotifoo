@@ -15,6 +15,7 @@ public class Cancion extends Reproducible{
     int album;
     String fecha;
     String genero;
+    boolean userOwned;
     
     public Cancion(String nombre,Artista artista,ConjuntoCanciones album,String genero,String fecha){
         super(nombre);
@@ -22,8 +23,7 @@ public class Cancion extends Reproducible{
         this.idArtista=artista.getId();
         this.album=album.getId();
         this.fecha=fecha;
-        
-        updateDB();
+
     }
     
     public Cancion(String nombre,Artista artista,String genero,String fecha){
@@ -32,7 +32,6 @@ public class Cancion extends Reproducible{
         this.idArtista=artista.getId();
         this.album=Integer.MIN_VALUE;
         this.fecha=fecha;
-        updateDB();
     }
     
     public Cancion(String nombre,String genero,String fecha){
@@ -42,12 +41,7 @@ public class Cancion extends Reproducible{
         this.album=Integer.MIN_VALUE;
         this.fecha=fecha;
     }
-    
-    private void updateDB(){
-        DAO bd = DAO_FS.getBaseDatos();
-        bd.addReprod(this);
-    }
-    
+        
     @Override
     public List<Reproducible> filtrarCanciones(Filtro f) {
         List<Reproducible> salida = new ArrayList<>();
@@ -57,35 +51,36 @@ public class Cancion extends Reproducible{
     }
     
     @Override
-    public List<Reproducible> getCanciones(){
-        List<Reproducible> salida =new ArrayList<Reproducible>();
+    public List<Cancion> getCanciones(){
+        List<Cancion> salida =new ArrayList<Cancion>();
         salida.add(this);
         return salida;
+    }
+    
+    @Override
+    public int getCantCanciones(){
+        return 1;
     }
 
     public void setAlbum(int album) {
         this.album = album;
-        updateDB();
+
     }
 
     public void setArtista(Artista artista) {
         this.idArtista = artista.getId();
-        updateDB();
     }
 
     public void setFecha(String fecha) {
         this.fecha = fecha;
-        updateDB();
     }
 
     public void setGenero(String genero) {
         this.genero = genero;
-        updateDB();
     }
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
-        updateDB();
     }
 
     public ConjuntoCanciones getAlbum() {
@@ -104,6 +99,10 @@ public class Cancion extends Reproducible{
         else return null;
     }
 
+    public boolean isAlbumSet(){
+        return album != Integer.MIN_VALUE;
+    }
+    
     public String getFecha() {
         return fecha;
     }
@@ -126,6 +125,25 @@ public class Cancion extends Reproducible{
     public boolean perteneceGenero(String genero){
         return this.genero.equals(genero);
     }
+
+    @Override
+    public String play() {
+        if(!this.isAlbumSet())
+            return DAO_FS.getBaseDatos().getImg(nombre);
+        else {
+            String s = DAO_FS.getBaseDatos().getReproducible(album).getNombre();
+            return DAO_FS.getImg(s);
+        }
+            
+    }
+    
+    @Override
+    public String toString(){
+        if(this.getArtista() == null)
+            return this.getNombre() +" | " + this.getGenero();
+        return this.getNombre() +" | " + this.getArtista().getNombre() + " | "+ this.getGenero();
+    }
+    
     
     
 }

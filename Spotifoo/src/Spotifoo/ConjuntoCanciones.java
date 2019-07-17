@@ -18,26 +18,21 @@ public class ConjuntoCanciones extends Reproducible{
     public ConjuntoCanciones (String nombre){
         super(nombre);
         canciones = new ArrayList<>();
-        DAO bd = DAO_FS.getBaseDatos();
-        bd.addReprod(this);
+
     }
     
-    public ConjuntoCanciones(String nombre,List<ConjuntoCanciones> canciones){
+    public ConjuntoCanciones(String nombre,List<Cancion> canciones){
         super(nombre);
         
         List<Integer> l = new ArrayList<>();
-        for(ConjuntoCanciones c: canciones)
+        for(Cancion c: canciones)
             l.add(c.getId());
         this.canciones=l;
-        
-        DAO bd = DAO_FS.getBaseDatos();
-        bd.addReprod(this);
+
     }
     
     public void agregar(Reproducible r){
         canciones.add(r.getId());
-        DAO bd = DAO_FS.getBaseDatos();
-        bd.addReprod(this);
     }
     
     //Actualiza todas las canciones añadidas a este objeto y les asigna su id
@@ -69,14 +64,19 @@ public class ConjuntoCanciones extends Reproducible{
     }
 
     @Override
-    public List<Reproducible> getCanciones() {
+    public List<Cancion> getCanciones() {
         DAO bd = DAO_FS.getBaseDatos();
         
-        List<Reproducible> salida = new ArrayList<>();
+        List<Cancion> salida = new ArrayList<>();
         for (Integer r:canciones){
                 salida.addAll(bd.getReproducible(r).getCanciones());
         }
         return salida;
+    }
+    
+    @Override
+    public int getCantCanciones(){
+        return canciones.size();
     }
     
     @Override
@@ -108,4 +108,16 @@ public class ConjuntoCanciones extends Reproducible{
         else
             return false;
     }
+
+    @Override
+    public String play() {
+        return nombre;
+    }
+    
+    @Override
+    public String toString(){
+        
+        return this.getNombre();
+    }
+    
 }

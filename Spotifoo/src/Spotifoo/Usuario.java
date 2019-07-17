@@ -22,7 +22,6 @@ public class Usuario extends Cuenta{
         super(nombreUsuario, contraseña);
         bibliotecaPersonal = new ArrayList();
         playlist = new HashMap();
-        updateDB();
     }
     
     private void updateDB(){
@@ -39,8 +38,13 @@ public class Usuario extends Cuenta{
         updateDB();
     }
     
-    public void delPlaylist(ConjuntoCanciones p){
-        playlist.remove(p.getNombre());
+    public void delPlaylist(String p){
+        playlist.remove(p);
+        updateDB();
+    }
+    
+    public void delElem(Reproducible r){
+        this.bibliotecaPersonal.remove(r);
         updateDB();
     }
     
@@ -52,11 +56,29 @@ public class Usuario extends Cuenta{
     public void addListaReproducible(Reproducible r,String nombrePlayList){
          for (Map.Entry<String,ConjuntoCanciones> entry : playlist.entrySet()) {
             if (entry.getKey().equals(nombrePlayList))
-                    entry.getValue().agregar(r);
+                entry.getValue().agregar(r);
         }
         updateDB();
     }
 
+    public Reproducible getCancion(String nombre){
+        
+        for(Reproducible r : bibliotecaPersonal)
+            if(r.getNombre().equals(nombre))
+                return r;
+        
+        return null;
+    }
+    
+    public Reproducible getPlaylist(String nombre){
+        
+        for (Map.Entry<String,ConjuntoCanciones> entry : playlist.entrySet()) {
+            if (entry.getKey().equals(nombre))
+                return entry.getValue();
+        }
+        return null;
+    }
+    
     public HashMap<String, ConjuntoCanciones> getPlaylist() {
         return playlist;
     }  

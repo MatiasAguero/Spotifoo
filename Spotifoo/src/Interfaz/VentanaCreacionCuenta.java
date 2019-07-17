@@ -132,7 +132,10 @@ public class VentanaCreacionCuenta extends javax.swing.JFrame {
         if (pass.getText().equals(pass2.getText())){
             setVisible(false);
             Usuario c = new Usuario(usuario.getText(),pass.getText());
-            bd.addCuenta(c);
+            if(!bd.existsCuenta(c))
+                bd.addCuenta(c);
+            else
+               JOptionPane.showMessageDialog(null,"La cuenta ya existe");
             new ventanaLogin().setVisible(true);
         }else{
             JOptionPane.showMessageDialog(null,"Las constraseñas no coinciden.");
