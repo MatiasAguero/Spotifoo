@@ -1,6 +1,7 @@
 package Spotifoo.DataManager;
 import Spotifoo.*;
 import Spotifoo.Filtro.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,25 +15,72 @@ public abstract class DAO {
     protected HashMap<Integer, Reproducible> libreria;
     protected HashMap<Integer, Artista> artistas;
     
+    //Recupera los datos de las cuentas y los carga en memoria
     protected abstract void setCuentas();
     
+    //Recupera los datos de la libreria y los carga en memoria
     protected abstract void setLibreria();
     
+    //Recupera los datos de los artistas y los carga en memoria
     protected abstract void setArtistas();
     
-    public abstract List<Reproducible> buscar(Filtro f);
+    //Actualiza los datos de la libreria fisicamente
+    protected abstract void saveLib();
     
-    public abstract void addReprod(Reproducible r);
+    //Actualiza los datos de las cuentas fisicamente
+    protected abstract void saveUsers();
     
-    public abstract void delReprod(Reproducible r);
+    //Actualiza los datos de los artistas fisicamente
+    protected abstract void saveArt();
     
-    public abstract void delCuenta(Cuenta c);
+    public List<Reproducible> buscar(Filtro f){
+        List<Reproducible> salida = new ArrayList<>();
+        for (Map.Entry<Integer, Reproducible> entry : libreria.entrySet()) {
+            if (f.cumple(entry.getValue()))
+                salida.add(entry.getValue());
+        }
+        return salida;
+    }
     
-    public abstract void addCuenta(Cuenta c);
+    public void addReprod(Reproducible r){
+        libreria.put(r.getId(), r);
+        this.saveLib();
+    }
     
-    public abstract void addArtista(Artista a);
+    public void delReprod(Reproducible r){
+        libreria.remove(r.getId());
+        this.saveLib();
+    }
     
-    public abstract void delArtista(Artista a);
+    public void delCuenta(Cuenta c){
+        if(cuentas.containsKey(c.getUserName())){
+            cuentas.remove(c.getUserName());
+            this.saveUsers();
+        }
+    }
+    
+    public boolean existsCuenta(Cuenta c){
+        if(cuentas.containsKey(c.getUserName()))
+            return true;
+        return false;
+    }
+    
+    public void addCuenta(Cuenta c){
+        
+        cuentas.put(c.getUserName(), c);
+        this.saveUsers();
+
+    }
+    
+    public void addArtista(Artista a){
+        artistas.put(a.getId(), a);
+        this.saveArt();
+    }
+    
+    public void delArtista(Artista a){
+        artistas.remove(a.getId());
+        this.saveArt();
+    }
     
     public Reproducible getReproducible(int id){
         return libreria.get(id);
@@ -40,6 +88,16 @@ public abstract class DAO {
  
     public Artista getArtista(int id){
         return artistas.get(id);
+    }
+    
+    public Reproducible getReproducible(String nombre){
+        for (Map.Entry<Integer, Reproducible> entry : libreria.entrySet()) {
+                if (entry.getValue().getNombre().equals(nombre)){
+                    System.out.println(entry.getValue().getNombre());
+                    return entry.getValue();
+                }
+            }
+        return null;
     }
     
     public HashMap<String, Cuenta> getCuentas(){
@@ -55,7 +113,7 @@ public abstract class DAO {
     }
     
     public Artista getArtistaNombre(String nombre){
-        for (Map.Entry<Integer, Artista> entry : DAO_FS.getBaseDatos().getArtista().entrySet()) {
+        for (Map.Entry<Integer, Artista> entry : artistas.entrySet()) {
                 if (entry.getValue().getNombre().equals(nombre))
                     return entry.getValue();
             }
@@ -63,7 +121,20 @@ public abstract class DAO {
     }
     
     public void delReprodId(Integer id){
-        if (libreria.containsKey(id))
+        System.out.println(id);
+        if (libreria.containsKey(id)){
             libreria.remove(id);
+            this.saveLib();
+        }
+            
+    }
+    
+    public void delUsrId(String id){
+        System.out.println(id);
+        if (cuentas.containsKey(id)){
+            cuentas.remove(id);
+            this.saveUsers();
+        }
+            
     }
 }

@@ -28,17 +28,16 @@ public class Artista implements Serializable{
             l.add(c.getId());
         
         this.discografia=l;
-        updateDB();
-    }
-
-    private void updateDB(){
-        DAO bd = DAO_FS.getBaseDatos();
-        bd.addArtista(this);
     }
     
+    public Artista(String nombre){
+        this.nombre=nombre;
+        this.id = this.hashCode();
+    }
+
+
     public void setAñoFormacion(int añoFormacion) {
         this.añoFormacion = añoFormacion;
-        updateDB();
     }
 
     public void setDiscografia(List<ConjuntoCanciones> discografia) {
@@ -48,18 +47,14 @@ public class Artista implements Serializable{
             l.add(c.getId());
         
         this.discografia=l;
-        
-        updateDB();
     }
 
     public void setGenero(String genero) {
         this.genero = genero;
-        updateDB();
     }
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
-        updateDB();
     }
 
     public int getAñoFormacion() {

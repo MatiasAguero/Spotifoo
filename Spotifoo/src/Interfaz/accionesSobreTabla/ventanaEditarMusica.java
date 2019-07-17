@@ -142,6 +142,10 @@ public class ventanaEditarMusica extends javax.swing.JFrame {
         String album;
         for(Reproducible r: repro.getCanciones()){ 
             c = (Cancion) r;
+            System.out.println(c.getNombre());
+            System.out.println(c.getArtista().getNombre());
+            System.out.println(c.getGenero());
+            System.out.println(c.getFecha());
             model.addRow(new Object[]{c.getNombre(),c.getArtista().getNombre(),
                 c.getGenero(),c.getFecha()});
             canciones.add(c);

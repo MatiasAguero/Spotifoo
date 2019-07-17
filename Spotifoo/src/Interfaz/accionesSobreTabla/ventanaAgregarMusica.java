@@ -58,6 +58,8 @@ public class ventanaAgregarMusica extends javax.swing.JFrame {
         nombreTextField = new JTextField();
         JLabel artista = new JLabel("Artista");
         listArtista = new JComboBox(); 
+        listArtista.setEditable(true);
+        listArtista.addItem("Escribir o Seleccionar...");
         for (Map.Entry<Integer, Artista> entry : DAO_FS.getBaseDatos().getArtista().entrySet()) {
             listArtista.addItem(entry.getValue().getNombre());
         }
@@ -152,10 +154,15 @@ public class ventanaAgregarMusica extends javax.swing.JFrame {
         private void añadirCancionTablaActionPerformed(ActionEvent evt) {
             DefaultTableModel model = (DefaultTableModel) table.getModel();
             model.addRow(new Object[]{nombreTextField.getText(),listArtista.getSelectedItem(),
-                         listGenero.getSelectedItem(),añoTextField.getSelectedText()});
+                         listGenero.getSelectedItem(),añoTextField.getText()});
+            
+            if(listArtista.getSelectedIndex() == -1)
+                if(DAO_FS.getBaseDatos().getArtistaNombre((String)listArtista.getSelectedItem()) == null)
+                    DAO_FS.getBaseDatos().addArtista(new Artista((String)listArtista.getSelectedItem()));
+                
             cancionesAñadidas.add(new Cancion(nombreTextField.getText(),  DAO_FS.getBaseDatos().
-                                    getArtistaNombre((String)listArtista.getSelectedItem()),
-                                    (String)listGenero.getSelectedItem(),añoTextField.getSelectedText()));
+                    getArtistaNombre((String)listArtista.getSelectedItem()),
+                    (String)listGenero.getSelectedItem(),añoTextField.getText()));
         }
     });
     restaurarTabla.addActionListener(new java.awt.event.ActionListener() {
@@ -191,12 +198,16 @@ public class ventanaAgregarMusica extends javax.swing.JFrame {
                 if (!nombreAlbum.equals("")){
                     ConjuntoCanciones album = new ConjuntoCanciones(nombreAlbum);
                     for(Cancion c: cancionesAñadidas){
+                        model.addRow(new Object[]{c.getId(),c.getNombre()});
+                        admin.addReprod(c);
                         album.agregar(c);
                     }
                     album.setAlbum();
                     admin.addReprod(album);
                     model.addRow(new Object[]{album.getId(),nombreAlbum});
                     }
+                else
+                    JOptionPane.showMessageDialog (null, "No se ha escrito el nombre del album", "Atencion!", JOptionPane.WARNING_MESSAGE);
             }
         }
     });

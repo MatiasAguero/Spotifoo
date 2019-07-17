@@ -18,13 +18,9 @@ public class Admin extends Cuenta{
         DAO_FS.getBaseDatos().addReprod(r);
         
     }
-
-    public void delUsuario(Usuario u){
-        DAO_FS.getBaseDatos().delCuenta(u);
-    }
-
-    public void delReprod(Reproducible r){
-        DAO_FS.getBaseDatos().delReprod(r);
+    
+    public void delUsrId(String id){
+        DAO_FS.getBaseDatos().delUsrId(id);
     }
     
     public void delReprodId(int id){

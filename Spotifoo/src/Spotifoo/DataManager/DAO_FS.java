@@ -37,6 +37,8 @@ public class DAO_FS extends DAO{
     public static final String PATH_APP_BD_USERS = PATH_APP_DATA+"/bd/users";
     public static final String PATH_APP_BD_LIB = PATH_APP_DATA+"/bd/lib";
     public static final String PATH_APP_BD_ARTISTAS = PATH_APP_DATA+"/bd/artists";
+    public static final String PATH_APP_IMG_ART = PATH_APP_DATA+"/img/canciones/";
+    public static final String PATH_APP_IMG = PATH_APP_DATA+"/img/";
     
     protected static DAO_FS instanciaDaoFs;
     
@@ -211,9 +213,19 @@ public class DAO_FS extends DAO{
             bw = new BufferedWriter(new FileWriter(f));
             
             bw.write(((Cancion) r).getNombre());
-            bw.write(((Cancion) r).getArtista().getId());
-            bw.write(((Cancion) r).getAlbum().getId());
+            bw.write("\n");
+            if(((Cancion) r).getArtista() != null)
+                bw.write(((Cancion) r).getArtista().getId());
+            else
+                bw.write(Integer.MIN_VALUE);
+            bw.write("\n");
+            if(((Cancion) r).getAlbum() != null)
+                bw.write(((Cancion) r).getAlbum().getId());
+            else
+                bw.write(Integer.MIN_VALUE);
+            bw.write("\n");
             bw.write(((Cancion) r).getFecha());
+            bw.write("\n");
             bw.write(((Cancion) r).getGenero());
             bw.close();
             
@@ -223,7 +235,8 @@ public class DAO_FS extends DAO{
     
     }
     
-    private void saveLib(){
+    @Override
+    protected void saveLib(){
         
         ObjectOutputStream oos;
         FileOutputStream fos;
@@ -248,7 +261,8 @@ public class DAO_FS extends DAO{
         
     }
     
-    private void saveUsers(){
+    @Override
+    protected void saveUsers(){
         ObjectOutputStream oos;
         FileOutputStream fos;
 
@@ -273,7 +287,8 @@ public class DAO_FS extends DAO{
     
     }
     
-    private void saveArt(){
+    @Override
+    protected void saveArt(){
         ObjectOutputStream oos;
         FileOutputStream fos;
 
@@ -317,58 +332,7 @@ public class DAO_FS extends DAO{
         return null;
     }
 
-    @Override
-    public void addCuenta(Cuenta c){
-        if(!cuentas.containsKey(c.getUserName())){
-            cuentas.put(c.getUserName(), c);
-            this.saveUsers();
-        }
+    public static String getImg(String nombCancion){
+        return PATH_APP_IMG_ART+nombCancion+".jpg";
     }
-    
-    @Override
-    public void delCuenta(Cuenta c){
-        if(cuentas.containsKey(c.getUserName())){
-            cuentas.remove(c.getUserName());
-            this.saveUsers();
-        }
-    }
-
-    @Override
-    public void addReprod(Reproducible r){
-        
-        libreria.put(r.getId(), r);
-        this.saveLib();
-
-    }
-
-    @Override
-    public void delReprod(Reproducible r){
-        
-        libreria.remove(r.getId());
-        this.saveLib();
-
-    }
-    
-    @Override
-    public List<Reproducible> buscar(Filtro f){
-        List<Reproducible> salida = new ArrayList<>();
-        for (Map.Entry<Integer, Reproducible> entry : libreria.entrySet()) {
-            if (f.cumple(entry.getValue()))
-                salida.add(entry.getValue());
-        }
-        return salida;
-    }
-
-    @Override
-    public void addArtista(Artista a) {
-        artistas.put(a.getId(), a);
-        this.saveArt();
-    }
-
-    @Override
-    public void delArtista(Artista a) {
-        artistas.remove(a.getId());
-        this.saveArt();
-    }
-
 }
