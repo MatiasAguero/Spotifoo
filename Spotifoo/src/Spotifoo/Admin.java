@@ -26,6 +26,10 @@ public class Admin extends Cuenta{
     public void delReprodId(int id){
         DAO_FS.getBaseDatos().delReprodId(id);
     }
+    
+    public void addArtista(Artista artista){
+        DAO_FS.getBaseDatos().addArtista(artista);
+    }
 
     @Override
     public JFrame getFrame() {

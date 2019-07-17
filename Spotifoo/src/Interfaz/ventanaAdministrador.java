@@ -1,8 +1,11 @@
 package Interfaz;
 
+import Interfaz.accionesSobreTabla.ventanaAgregarArtista;
 import Interfaz.accionesSobreTabla.ventanaAgregarMusica;
+import Interfaz.accionesSobreTabla.ventanaEditarArtista;
 import Interfaz.accionesSobreTabla.ventanaEditarMusica;
 import Spotifoo.Admin;
+import Spotifoo.Artista;
 import Spotifoo.Cuenta;
 import Spotifoo.DataManager.DAO;
 import Spotifoo.DataManager.DAO_FS;
@@ -41,7 +44,7 @@ public class ventanaAdministrador extends javax.swing.JFrame {
     private static final String OPCION_USR = "Usuarios";
     private static final String OPCION_REP = "Reproducibles";
     private static final String OPCION_ART = "Artistas";
-    
+    private String nombreCol;
     DAO bd = DAO_FS.getBaseDatos();
     Admin admin;
     
@@ -124,6 +127,7 @@ public class ventanaAdministrador extends javax.swing.JFrame {
         opcion = new JComboBox();
         opcion.addItem(OPCION_REP);
         opcion.addItem(OPCION_USR);
+        opcion.addItem(OPCION_ART);
         //Agregar musica
         agregarButton = new JButton("Agregar...");
         
@@ -216,7 +220,10 @@ public class ventanaAdministrador extends javax.swing.JFrame {
             }
 
             private void agregarButtonActionPerformed(ActionEvent evt) {
-                new ventanaAgregarMusica(table,admin);
+                if (opcion.getSelectedItem().equals(OPCION_REP))
+                    new ventanaAgregarMusica(table,admin);
+                else
+                    new ventanaAgregarArtista(table,admin);
             }
         });
         
@@ -247,7 +254,10 @@ public class ventanaAdministrador extends javax.swing.JFrame {
 
             private void editarButtonActionPerformed(ActionEvent evt) {
                 if (table.getSelectedRow()!=-1){
-                    new ventanaEditarMusica(table,admin);
+                    if(opcion.getSelectedItem().equals(OPCION_REP))
+                        new ventanaEditarMusica(table,admin);
+                    else
+                        new ventanaEditarArtista(table,admin);
                 } 
                 else{
                     JOptionPane.showMessageDialog (null, "No se ha seleccionado ningun elemento", "Atencion!", JOptionPane.WARNING_MESSAGE);
@@ -259,6 +269,7 @@ public class ventanaAdministrador extends javax.swing.JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             DefaultTableModel model = (DefaultTableModel) table.getModel();
+            model.setColumnIdentifiers(new Object[]{"Id", "Nombre"});
             while (table.getRowCount()!=0)
                 model.removeRow(table.getRowCount()-1);
 
@@ -269,11 +280,18 @@ public class ventanaAdministrador extends javax.swing.JFrame {
                     model.addRow(new Object[]{entry.getValue().getId(),entry.getValue().getNombre()});
                 }
             }
-            else{
+            else if (opcion.getSelectedItem().equals(OPCION_USR)){
                 agregarButton.setEnabled(false);
                 editarButton.setEnabled(false);
+                model.setColumnIdentifiers(new Object[]{"Nombre", "Constraseña"});
                 for (Map.Entry<String, Cuenta> entry : bd.getCuentas().entrySet()) 
                     model.addRow(new Object[]{entry.getKey(),entry.getValue().getContraseña()});
+            }
+            else{
+                agregarButton.setEnabled(true);
+                editarButton.setEnabled(true);
+                for (Map.Entry<Integer, Artista> entry : bd.getArtista().entrySet()) 
+                    model.addRow(new Object[]{entry.getKey(),entry.getValue().getNombre()});
             }
         }  
         });

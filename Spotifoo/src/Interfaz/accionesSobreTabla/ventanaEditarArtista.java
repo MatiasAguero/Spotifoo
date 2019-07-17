@@ -1,14 +1,15 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package Interfaz.accionesSobreTabla;
 
 import Spotifoo.Admin;
-import Spotifoo.Cancion;
-import Spotifoo.DataManager.DAO;
+import Spotifoo.Artista;
 import Spotifoo.DataManager.DAO_FS;
-import Spotifoo.Reproducible;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.List;
 import javax.swing.BoxLayout;
 import javax.swing.GroupLayout;
 import static javax.swing.GroupLayout.Alignment.BASELINE;
@@ -17,50 +18,30 @@ import static javax.swing.GroupLayout.Alignment.TRAILING;
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
 /**
  *
- * @author nico
+ * @author nicolaz999
  */
-public class ventanaEditarMusica extends javax.swing.JFrame {
-   
-    JTable tableVentanaMusica;
+public class ventanaEditarArtista extends javax.swing.JFrame {
+
+    JTable tableVentanaArtista;
     Admin admin;
     JTable table;
     JButton aplicarButton;
-    
-    List<Cancion> canciones;
-    public ventanaEditarMusica(JTable table,Admin admin) {
+    Artista artista;
+
+    public ventanaEditarArtista(JTable table,Admin admin) {
         initComponents();
-        this.tableVentanaMusica = table;
+        this.tableVentanaArtista = table;
         this.admin = admin;
-        this.canciones = new ArrayList<>();
         configFrame();
         generarLayout();
         setTableRow();
         eventosComponentes();
     }
-
-
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
-        );
-    }// </editor-fold>//GEN-END:initComponents
-
     private void configFrame() {
         this.setTitle("Spotifoo");
         setSize(800, 200);
@@ -71,7 +52,7 @@ public class ventanaEditarMusica extends javax.swing.JFrame {
     }
 
     private void generarLayout() {
-        String[] columnNames={"Nombre", "Artista","Genero","Año"};
+        String[] columnNames={"Nombre", "Genero","Año"};
         Object[][] data = {};
         table = new JTable(data,columnNames);
         TableModel model = new DefaultTableModel(data,columnNames){
@@ -113,41 +94,55 @@ public class ventanaEditarMusica extends javax.swing.JFrame {
 
         private void aplicarButtonActionPerformed(ActionEvent evt) {
             DefaultTableModel model = (DefaultTableModel) table.getModel();
-            DefaultTableModel modelVentanaMusica = (DefaultTableModel) tableVentanaMusica.getModel();
-            int i = 0;
-            for (Cancion c : canciones){
-                for(int j=0 ; j < tableVentanaMusica.getRowCount();j++){
-                    if (modelVentanaMusica.getValueAt(j, 1).equals(c.getNombre()))
-                        modelVentanaMusica.removeRow(j);
+            DefaultTableModel modelVentanaArtista = (DefaultTableModel) tableVentanaArtista.getModel();
+            
+            for(int j=0 ; j < tableVentanaArtista.getRowCount();j++){
+                    if (modelVentanaArtista.getValueAt(j, 1).equals(artista.getNombre()))
+                        modelVentanaArtista.removeRow(j);
                 }
-                c.setNombre((String) model.getValueAt(i, 0));
-                c.setArtista(DAO_FS.getBaseDatos().getArtistaNombre((String) model.getValueAt(i, 1)));
-                c.setGenero((String) model.getValueAt(i, 2));
-                c.setFecha((String) model.getValueAt(i, 3));
-                admin.addReprod(c);
-                
-                modelVentanaMusica.addRow(new Object[]{c.getId(),c.getNombre()});
-                i++;
-            }
+            artista.setAñoFormacion((Integer)model.getValueAt(0, 2));
+            artista.setGenero((String) model.getValueAt(0, 1));
+            artista.setNombre((String) model.getValueAt(0, 0));
+            
+            admin.addArtista(artista);
+            modelVentanaArtista.addRow(new Object[]{artista.getId(),artista.getNombre()});
         }
     });
     }
 
-    private void setTableRow() {
-        DefaultTableModel model = (DefaultTableModel) tableVentanaMusica.getModel();
-        Reproducible repro = DAO_FS.getBaseDatos().getReproducible((Integer)model.getValueAt(tableVentanaMusica.getSelectedRow(), 0));
-        
+    private void setTableRow(){
+        DefaultTableModel model = (DefaultTableModel) tableVentanaArtista.getModel();
+        artista = DAO_FS.getBaseDatos().getArtista((Integer)model.getValueAt(tableVentanaArtista.getSelectedRow(), 0));
+
         model = (DefaultTableModel) table.getModel();
-        Cancion c;
-        String album;
-        for(Reproducible r: repro.getCanciones()){ 
-            c = (Cancion) r;
-            model.addRow(new Object[]{c.getNombre(),c.getArtista().getNombre(),
-                c.getGenero(),c.getFecha()});
-            canciones.add(c);
-        }
-        
+        model.addRow(new Object[]{artista.getNombre(),artista.getGenero(),
+            artista.getAñoFormacion()});
     }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 400, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 300, Short.MAX_VALUE)
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
