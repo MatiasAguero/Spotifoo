@@ -130,11 +130,17 @@ public abstract class DAO {
     }
     
     public void delUsrId(String id){
-        System.out.println(id);
         if (cuentas.containsKey(id)){
             cuentas.remove(id);
             this.saveUsers();
         }
             
+    }
+    
+    public void delArtistaId(int id) {
+        if(artistas.containsKey(id)){
+            artistas.remove(id);
+            this.saveArt();
+        }
     }
 }

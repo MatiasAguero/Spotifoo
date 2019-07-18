@@ -30,6 +30,10 @@ public class Admin extends Cuenta{
     public void addArtista(Artista artista){
         DAO_FS.getBaseDatos().addArtista(artista);
     }
+    
+    public void delArtista(int id){
+        DAO_FS.getBaseDatos().delArtistaId(id);
+    }
 
     @Override
     public JFrame getFrame() {

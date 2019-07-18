@@ -2,7 +2,6 @@ package Interfaz.accionesSobreTabla;
 
 import Spotifoo.Admin;
 import Spotifoo.Cancion;
-import Spotifoo.DataManager.DAO;
 import Spotifoo.DataManager.DAO_FS;
 import Spotifoo.Reproducible;
 import java.awt.Dimension;

@@ -9,7 +9,6 @@ import Spotifoo.Artista;
 import Spotifoo.Cuenta;
 import Spotifoo.DataManager.DAO;
 import Spotifoo.DataManager.DAO_FS;
-import Spotifoo.Filtro.Filtro;
 import Spotifoo.Reproducible;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -28,10 +27,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
@@ -109,8 +109,8 @@ public class ventanaAdministrador extends javax.swing.JFrame {
         idRadioButton.setSelected(true);
         
         //Creacion de tabla
-        String[] columnNames={"ID", "Nombre"};
-        Object[][] data = getData(null);
+        String[] columnNames={"ID", "Nombre","Album"};
+        Object[][] data = getData();
         table = new JTable(data,columnNames);
         TableModel model = new DefaultTableModel(data,columnNames){
             @Override
@@ -130,10 +130,9 @@ public class ventanaAdministrador extends javax.swing.JFrame {
         opcion.addItem(OPCION_ART);
         //Agregar musica
         agregarButton = new JButton("Agregar...");
-        
         //borrar musica
         borrarButton = new JButton("Eliminar");
-        
+        borrarButton.setEnabled(false);
         //editar musica
         editarButton = new JButton("Editar");
         
@@ -144,13 +143,6 @@ public class ventanaAdministrador extends javax.swing.JFrame {
         layout.setAutoCreateContainerGaps(true);
         layout.setHorizontalGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(buscarLabel)
-                        .addComponent(textField)
-                        .addComponent(idRadioButton)
-                        .addComponent(nombreRadioButton)
-                        .addComponent(buscarButton)
-                        .addComponent(restaurarButton))
                     .addComponent(scrollPane)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(opcion)
@@ -160,13 +152,6 @@ public class ventanaAdministrador extends javax.swing.JFrame {
         );
         
         layout.setVerticalGroup(layout.createSequentialGroup()
-            .addGroup(layout.createParallelGroup(BASELINE)
-                .addComponent(buscarLabel)
-                .addComponent(textField)
-                .addComponent(idRadioButton)
-                .addComponent(nombreRadioButton)
-                .addComponent(buscarButton)
-                .addComponent(restaurarButton))
             .addGroup(layout.createParallelGroup(LEADING)
                 .addComponent(scrollPane))
             .addGroup(layout.createParallelGroup(BASELINE)
@@ -177,17 +162,18 @@ public class ventanaAdministrador extends javax.swing.JFrame {
         );
     }
     
-    private Object[][] getData(Filtro f){
-
+    private Object[][] getData(){
         int cant = bd.getLibreria().size();
-        Object[][] data = new Object[cant][2];
-        if (f == null){
-            int i=0;
-            for (Map.Entry<Integer, Reproducible> entry : bd.getLibreria().entrySet()) {
-                data[i][0] = entry.getValue().getId();
-                data[i][1] = entry.getValue().getNombre();
-                i++;
-            }
+        Object[][] data = new Object[cant][3];
+        int i=0;
+        for (Map.Entry<Integer, Reproducible> entry : bd.getLibreria().entrySet()) {
+            data[i][0] = entry.getValue().getId();
+            data[i][1] = entry.getValue().getNombre();
+            if (entry.getValue().getCantCanciones() > 1)
+                data[i][2] = "Si";
+            else
+                data[i][2] = "No";
+            i++;
         }
         return data;
     }
@@ -239,10 +225,13 @@ public class ventanaAdministrador extends javax.swing.JFrame {
                 
                 if(opcion.getSelectedItem().equals(OPCION_REP))
                     admin.delReprodId((Integer)model.getValueAt(table.getSelectedRow(), 0));
-                else
+                else if(opcion.getSelectedItem().equals(OPCION_ART))
+                    admin.delArtista((Integer)model.getValueAt(table.getSelectedRow(), 0));
+                else{
                     admin.delUsrId((String)model.getValueAt(table.getSelectedRow(), 0));
-                
+                }
                 model.removeRow(table.getSelectedRow());
+                borrarButton.setEnabled(false);
             }
         });
         
@@ -269,16 +258,13 @@ public class ventanaAdministrador extends javax.swing.JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             DefaultTableModel model = (DefaultTableModel) table.getModel();
-            model.setColumnIdentifiers(new Object[]{"Id", "Nombre"});
             while (table.getRowCount()!=0)
                 model.removeRow(table.getRowCount()-1);
 
             if (opcion.getSelectedItem().equals(OPCION_REP)){
                 agregarButton.setEnabled(true);
                 editarButton.setEnabled(true);
-                for (Map.Entry<Integer, Reproducible> entry : bd.getLibreria().entrySet()) {
-                    model.addRow(new Object[]{entry.getValue().getId(),entry.getValue().getNombre()});
-                }
+                model.setDataVector(getData(), new Object[]{"Id", "Nombre","Album"});
             }
             else if (opcion.getSelectedItem().equals(OPCION_USR)){
                 agregarButton.setEnabled(false);
@@ -290,11 +276,18 @@ public class ventanaAdministrador extends javax.swing.JFrame {
             else{
                 agregarButton.setEnabled(true);
                 editarButton.setEnabled(true);
+                model.setColumnIdentifiers(new Object[]{"Id", "Nombre"});
                 for (Map.Entry<Integer, Artista> entry : bd.getArtista().entrySet()) 
                     model.addRow(new Object[]{entry.getKey(),entry.getValue().getNombre()});
             }
+            borrarButton.setEnabled(false);
         }  
         });
+        table.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
+        public void valueChanged(ListSelectionEvent event) {
+            borrarButton.setEnabled(true);
+        }
+    });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

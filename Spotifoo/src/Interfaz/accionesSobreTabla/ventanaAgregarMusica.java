@@ -5,13 +5,11 @@ import Spotifoo.Artista;
 import Spotifoo.Cancion;
 import Spotifoo.ConjuntoCanciones;
 import Spotifoo.DataManager.DAO_FS;
-import Spotifoo.Reproducible;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.*;
@@ -69,6 +67,7 @@ public class ventanaAgregarMusica extends javax.swing.JFrame {
                            "Merengue","Pop", "Punk", "Ranchera","Rap", "Reggae","Reggaeton","Rumba",
                            "Rock", "Rock and Roll", "Salsa", "Samba", "Tango","Vallenato"};
         listGenero = new JComboBox(generos); 
+        listGenero.setEditable(false);
         JLabel añoLabel = new JLabel("Año:");
         añoTextField = new JTextField();
         añadirCancionTabla = new JButton("+");
@@ -190,7 +189,7 @@ public class ventanaAgregarMusica extends javax.swing.JFrame {
             if (canciones.isSelected()){
                 //Agregar a la base de datos
                 for(Cancion c: cancionesAñadidas){
-                    model.addRow(new Object[]{c.getId(),c.getNombre()});
+                    model.addRow(new Object[]{c.getId(),c.getNombre(),"No"});
                     admin.addReprod(c);
                 }
             } else{
@@ -198,13 +197,13 @@ public class ventanaAgregarMusica extends javax.swing.JFrame {
                 if (!nombreAlbum.equals("")){
                     ConjuntoCanciones album = new ConjuntoCanciones(nombreAlbum);
                     for(Cancion c: cancionesAñadidas){
-                        model.addRow(new Object[]{c.getId(),c.getNombre()});
+                        model.addRow(new Object[]{c.getId(),c.getNombre(),"No"});
                         admin.addReprod(c);
                         album.agregar(c);
                     }
                     album.setAlbum();
                     admin.addReprod(album);
-                    model.addRow(new Object[]{album.getId(),nombreAlbum});
+                    model.addRow(new Object[]{album.getId(),nombreAlbum,"Si"});
                     }
                 else
                     JOptionPane.showMessageDialog (null, "No se ha escrito el nombre del album", "Atencion!", JOptionPane.WARNING_MESSAGE);

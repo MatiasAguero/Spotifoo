@@ -52,6 +52,7 @@ public class ventanaEditarArtista extends javax.swing.JFrame {
     }
 
     private void generarLayout() {
+        
         String[] columnNames={"Nombre", "Genero","Año"};
         Object[][] data = {};
         table = new JTable(data,columnNames);
